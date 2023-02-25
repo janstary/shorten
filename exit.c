@@ -13,11 +13,7 @@
 # include <errno.h>
 #endif
 # include <setjmp.h>
-# ifdef HAVE_STDARG_H
-#   include <stdarg.h>
-# else
-#   include <varargs.h>
-# endif
+# include <stdarg.h>
 # include "shorten.h"
 
 extern char *argv0;
@@ -51,19 +47,10 @@ void basic_exit(exitcode) int exitcode; {
 /****************************************************************************
 ** error_exit() - standard error handler with printf() syntax
 */
-# ifdef HAVE_STDARG_H
 void error_exit(char* fmt, ...) {
   va_list args;
 
   va_start(args, fmt);
-# else
-void error_exit(va_alist) va_dcl {
-  va_list args;
-  char    *fmt;
-
-  va_start(args);
-  fmt = va_arg(args, char*);
-# endif
 
   if(exitmessage == NULL)
   {
@@ -92,19 +79,10 @@ void error_exit(va_alist) va_dcl {
 **
 ** Appends system error message based on errno
 */
-# ifdef HAVE_STDARG_H
 void perror_exit(char* fmt, ...) {
   va_list args;
 
   va_start(args, fmt);
-# else
-void perror_exit(va_alist) va_dcl {
-  va_list args;
-  char    *fmt;
-
-  va_start(args);
-  fmt = va_arg(args, char*);
-# endif
 
   if(exitmessage == NULL) {
 #if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
@@ -134,21 +112,10 @@ void perror_exit(va_alist) va_dcl {
   basic_exit(errno);
 }
 
-# ifdef HAVE_STDARG_H
 void usage_exit(int exitcode, char* fmt, ...) {
   va_list args;
 
   va_start(args, fmt);
-# else
-void usage_exit(va_alist) va_dcl {
-  va_list args;
-  int     exitcode;
-  char    *fmt;
-
-  va_start(args);
-  exitcode = va_arg(args, int);
-  fmt      = va_arg(args, char*);
-# endif
 
   if(exitmessage == NULL) {
 #if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
@@ -175,21 +142,10 @@ void usage_exit(va_alist) va_dcl {
 }
 
 
-# ifdef HAVE_STDARG_H
 void update_exit(int exitcode, char* fmt, ...) {
   va_list args;
 
   va_start(args, fmt);
-# else
-void update_exit(va_alist) va_dcl {
-  va_list args;
-  int     exitcode;
-  char    *fmt;
-
-  va_start(args);
-  exitcode = va_arg(args, int);
-  fmt      = va_arg(args, char*);
-# endif
 
   if(exitmessage == NULL) {
 #if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)

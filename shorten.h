@@ -216,17 +216,10 @@ extern int	wav2poly PROTO ((long*, int, long, int, float*, float*));
 /*********************/
 /* defined in exit.c */
 extern void	basic_exit PROTO ((int));
-#ifdef HAVE_STDARG_H
 extern void	error_exit PROTO ((char*,...));
 extern void	perror_exit PROTO ((char*,...));
 extern void	usage_exit PROTO ((int, char*,...));
 extern void	update_exit PROTO ((int, char*,...));
-#else
-extern void	error_exit PROTO (());
-extern void	perror_exit PROTO (());
-extern void	usage_exit PROTO (());
-extern void	update_exit PROTO (());
-#endif
 
 /*************************/
 /* defined in hsgetopt.c */
