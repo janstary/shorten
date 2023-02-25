@@ -5,24 +5,15 @@
 *       See the file LICENSE for conditions on distribution and usage         *
 *                                                                             *
 ******************************************************************************/
-#ifdef _WINDOWS
-#include <windows.h>
-#endif
 
-#include <math.h>
-#include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef MSDOS
-#include <io.h>
-#include <fcntl.h>
-#ifdef MSDOS_DO_TIMING
-#include <time.h>
-#endif
-#else
 #include <unistd.h>
-#endif
-#include <setjmp.h>
+#include <stdio.h>
+#include <utime.h>
+#include <math.h>
+
 #include "shorten.h"
 
 #ifndef MSDOS
@@ -166,6 +157,28 @@ CheckWindowsAbort(void)
 }
 
 #endif
+
+int
+dupfileinfo(path0, path1)
+	char *path0, *path1;
+{
+	int errcode;
+	struct stat buf;
+
+	errcode = stat(path0, &buf);
+	if (!errcode) {
+		struct utimbuf ftime;
+
+		/* do what can be done, and igore errors */
+		(void)chmod(path1, buf.st_mode);
+		ftime.actime = buf.st_atime;
+		ftime.modtime = buf.st_mtime;
+		(void)utime(path1, &ftime);
+		(void)chown(path1, buf.st_uid, -1);
+		(void)chown(path1, -1, buf.st_gid);
+	}
+	return (errcode);
+}
 
 int
 shorten(stdi, stdo, argc, argv)
