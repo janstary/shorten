@@ -6,9 +6,11 @@
 *                                                                             *
 ******************************************************************************/
 
-# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdio.h>
+# include <err.h>
+
 # include "shorten.h"
 # include "bitshift.h"
 
@@ -100,7 +102,7 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
       nbyte = fread((char*) readbuf, 1 , datasize * nchan * nitem, stream);
     break;
   default:
-    update_exit(1, "can't read file type: %d\n", ftype);
+    errx(1, "can't read file type: %d\n", ftype);
   }
 
   if (*datalen > 0)
@@ -376,7 +378,7 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
   }
 
   if(nwrite != nitem)
-    update_exit(1, "failed to write decompressed stream\n");
+    errx(1, "failed to write decompressed stream\n");
 }
 
 /*************/

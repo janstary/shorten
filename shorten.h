@@ -107,13 +107,13 @@
 #define putc_exit(val, stream)\
 { char rval;\
   if((rval = putc((val), (stream))) != (char) (val))\
-    update_exit(1, "write failed: putc returns EOF\n");\
+    errx(1, "write failed: putc returns EOF\n");\
 }
 
 extern int getc_exit_val;
 #define getc_exit(stream)\
 (((getc_exit_val = getc(stream)) == EOF) ? \
-  update_exit(1, "read failed: getc returns EOF\n"), 0: getc_exit_val)
+  errx(1, "read failed: getc returns EOF\n"), 0: getc_exit_val)
 
 #undef	uchar
 #define uchar	unsigned char
@@ -186,7 +186,6 @@ extern int	wav2poly (long*, int, long, int, float*, float*);
 /* defined in exit.c */
 extern void	basic_exit (int);
 extern void	usage_exit (int, char*,...);
-extern void	update_exit (int, char*,...);
 
 /**********************/
 /* defined in array.c */

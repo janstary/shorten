@@ -761,7 +761,7 @@ default:
 
 		/* check version number */
 		if (version > MAX_SUPPORTED_VERSION)
-			update_exit(1, "can't decode version %d\n", version);
+			errx(1, "can't decode version %d\n", version);
 
 		/* set up the default nmean, ignoring the command line state */
 		nmean = (version < 2) ? DEFAULT_V0NMEAN : DEFAULT_V2NMEAN;
@@ -942,8 +942,7 @@ default:
 				}
 				break;
 			default:
-				update_exit(1, "sanity check fails trying to decode function: %d\n",
-					    cmd);
+				errx(1, "sanity check fails trying to decode function: %d\n", cmd);
 			}
 		}
 		/* wind up */

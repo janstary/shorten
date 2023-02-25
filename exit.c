@@ -33,16 +33,3 @@ void usage_exit(int exitcode, char* fmt, ...) {
   va_end(args);
   basic_exit(exitcode);
 }
-
-void update_exit(int exitcode, char* fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  {
-    if(fmt != NULL) {
-      fprintf(stderr, "%s: ", argv0);
-      (void) vfprintf(stderr, fmt, args);
-    }
-  }
-  va_end(args);
-  basic_exit(exitcode);
-}
