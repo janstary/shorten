@@ -76,16 +76,15 @@ init_offset(offset, nchan, nblock, ftype)
 }
 
 float
-Satof(string)
-	char *string;
+Satof(char *string)
 {
-	int i, rval = 1;
+	float val = 0;
+	char *e = NULL;
 
-	/* this should have tighter checking */
-	for (i = 0; i < (int)strlen(string) && rval == 1; i++)
-		if (string[i] != '.' && (string[i] < '0' || string[i] > '9'))
-			errx(1, "non-parseable float: %s\n", string);
-	return ((float)atof(string));
+	val = strtod(string, &e);
+	if (e && *e)
+		errx(1, "error in float expression at %s", e);
+	return val;
 }
 
 float *
