@@ -723,16 +723,6 @@ default:
 		}
 
 		/* read magic number */
-#ifdef STRICT_FORMAT_COMPATABILITY
-		if (FORMAT_VERSION < 2) {
-			for (i = 0; i < strlen(magic); i++)
-				if (getc_exit(filei) != magic[i])
-					usage_exit(1, "Bad magic number\n");
-
-			/* get version number */
-			version = getc_exit(filei);
-		} else
-#endif				/* STRICT_FORMAT_COMPATABILITY */
 		{
 			int nscan = 0;
 
