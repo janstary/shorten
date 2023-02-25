@@ -12,10 +12,10 @@
 # include "shorten.h"
 # include "bitshift.h"
 
-#define CAPMAXSCHAR(x)  ((x > 127) ? 127 : x)
-#define CAPMAXUCHAR(x)  ((x > 255) ? 255 : x)
-#define CAPMAXSHORT(x)  ((x > 32767) ? 32767 : x)
-#define CAPMAXUSHORT(x) ((x > 65535) ? 65535 : x)
+#define CAPS8(x)  ((x > 127) ? 127 : x)
+#define CAPU8(x)  ((x > 255) ? 255 : x)
+#define CAPS16(x) ((x > 32767) ? 32767 : x)
+#define CAPU16(x) ((x > 65535) ? 65535 : x)
 
 static int sizeof_sample[TYPE_EOF];
 
@@ -262,22 +262,22 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     uchar *writebufp = (uchar*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = CAPMAXUCHAR(data0[i]);
+	*writebufp++ = CAPU8(data0[i]);
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ =  CAPMAXUCHAR(data[chan][i]);
+	  *writebufp++ =  CAPU8(data[chan][i]);
     break;
   }
   case TYPE_S8: {
     char *writebufp = (char*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = CAPMAXSCHAR(data0[i]);
+	*writebufp++ = CAPS8(data0[i]);
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ = CAPMAXSCHAR(data[chan][i]);
+	  *writebufp++ = CAPS8(data[chan][i]);
     break;
   }
   case TYPE_S16HL:
@@ -285,11 +285,11 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     short *writebufp = (short*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = CAPMAXSHORT(data0[i]);
+	*writebufp++ = CAPS16(data0[i]);
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ = CAPMAXSHORT(data[chan][i]);
+	  *writebufp++ = CAPS16(data[chan][i]);
     break;
   }
   case TYPE_U16HL:
@@ -297,22 +297,22 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     ushort *writebufp = (ushort*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = CAPMAXUSHORT(data0[i]);
+	*writebufp++ = CAPU16(data0[i]);
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ = CAPMAXUSHORT(data[chan][i]);
+	  *writebufp++ = CAPU16(data[chan][i]);
     break;
   }
   case TYPE_ULAW: {
     uchar *writebufp = (uchar*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = Slinear2ulaw(CAPMAXSHORT(data0[i] << 3));
+	*writebufp++ = Slinear2ulaw(CAPS16(data0[i] << 3));
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ = Slinear2ulaw(CAPMAXSHORT(data[chan][i] << 3));
+	  *writebufp++ = Slinear2ulaw(CAPS16(data[chan][i] << 3));
     break;
   }
   case TYPE_AU3: {
@@ -336,11 +336,11 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     uchar *writebufp = (uchar*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
-	*writebufp++ = Slinear2alaw(CAPMAXSHORT(data0[i] << 3));
+	*writebufp++ = Slinear2alaw(CAPS16(data0[i] << 3));
     else
       for(i = 0; i < nitem; i++)
 	for(chan = 0; chan < nchan; chan++)
-	  *writebufp++ = Slinear2alaw(CAPMAXSHORT(data[chan][i] << 3));
+	  *writebufp++ = Slinear2alaw(CAPS16(data[chan][i] << 3));
     break;
   }
   }
