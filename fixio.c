@@ -110,7 +110,7 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
 
   { int nextra = nbyte % (datasize * nchan);
     if(nextra != 0)
-      usage_exit(1, "alignment problem: %d extra bytes\n", nextra);
+      errx(1, "alignment problem: %d extra bytes\n", nextra);
   }
   nread = nbyte / (datasize * nchan);
 

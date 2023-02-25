@@ -182,11 +182,6 @@ extern int	wav2lpc (long*, int, long, int*,int,int,float*,float*);
 /* defined in poly.c */
 extern int	wav2poly (long*, int, long, int, float*, float*);
 
-/*********************/
-/* defined in exit.c */
-extern void	basic_exit (int);
-extern void	usage_exit (int, char*,...);
-
 /**********************/
 /* defined in array.c */
 extern void* 	pmalloc (size_t);

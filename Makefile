@@ -8,7 +8,6 @@ BIN 	= shorten
 MAN 	= shorten.1
 OBJS	=		\
 	array.o		\
-	exit.o		\
 	fixio.o		\
 	lpc.o		\
 	poly.o		\
@@ -25,8 +24,8 @@ ${BIN}: ${OBJS} bitshift.h
 bitshift.h: mkbshift
 	./mkbshift
 
-mkbshift: mkbshift.c exit.o array.o ualaw.o
-	$(CC) $(CFLAGS) -o mkbshift mkbshift.c exit.o array.o ualaw.o
+mkbshift: mkbshift.c array.o ualaw.o
+	$(CC) $(CFLAGS) -o mkbshift mkbshift.c array.o ualaw.o
 
 %.o: %.c shorten.h
 	${CC} ${CFLAGS} -c $<

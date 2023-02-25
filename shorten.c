@@ -173,36 +173,36 @@ shorten(stdi, stdo, argc, argv)
 			switch (c) {
 			case 'a':
 				if ((nskip = atoi(optarg)) < 0)
-					usage_exit(1, "number of bytes to copy must be positive\n");
+					errx(1, "number of bytes to copy must be positive\n");
 				break;
 			case 'b':
 				if ((blocksize = atoi(optarg)) <= 0)
-					usage_exit(1, "block size must be greater than zero\n");
+					errx(1, "block size must be greater than zero\n");
 				break;
 			case 'c':
 				if ((nchan = atoi(optarg)) <= 0)
-					usage_exit(1, "number of channels must be greater than zero\n");
+					errx(1, "number of channels must be greater than zero\n");
 				break;
 			case 'd':
 				if ((ndiscard = atoi(optarg)) < 0)
-					usage_exit(1, "number of bytes to discard must be positive\n");
+					errx(1, "number of bytes to discard must be positive\n");
 				break;
 			case 'm':
 				if ((nmean = atoi(optarg)) < 0)
-					usage_exit(1, "number of blocks for mean estimation must be positive\n");
+					errx(1, "number of blocks for mean estimation must be positive\n");
 				break;
 			case 'n':
 				if ((minsnr = atoi(optarg)) < 0)
-					usage_exit(1, "Useful signal to noise ratios are positive\n");
+					errx(1, "Useful signal to noise ratios are positive\n");
 				break;
 			case 'p':
 				maxnlpc = atoi(optarg);
 				if (maxnlpc < 0 || maxnlpc > MAX_LPC_ORDER)
-					usage_exit(1, "linear prediction order must be in the range 0 ... %d\n", MAX_LPC_ORDER);
+					errx(1, "linear prediction order must be in the range 0 ... %d\n", MAX_LPC_ORDER);
 				break;
 case 'q':
 				if ((quanterror = atoi(optarg)) < 0)
-					usage_exit(1, "quantisation level must be positive\n");
+					errx(1, "quantisation level must be positive\n");
 				break;
 			case 'r':
 				maxresnstr = optarg;
@@ -237,7 +237,7 @@ case 'q':
 				else if (!strcmp(optarg, "wav"))
 					ftype = TYPE_RIFF_WAVE;
 				else
-					usage_exit(1, "unknown file type: %s\n", optarg);
+					errx(1, "unknown file type: %s\n", optarg);
 				break;
 			case 'u':
 				ulawZeroMerge = 1;
@@ -245,14 +245,14 @@ case 'q':
 			case 'v':
 				version = atoi(optarg);
 				if (version < 0 || version > MAX_SUPPORTED_VERSION)
-					usage_exit(1, "currently supported versions are in the range %d ... %d\n",
+					errx(1, "currently supported versions are in the range %d ... %d\n",
 						   MIN_SUPPORTED_VERSION, MAX_SUPPORTED_VERSION);
 				break;
 			case 'x':
 				extract = 1;
 				break;
 default:
-				usage_exit(1, NULL);
+				errx(1, NULL);
 				break;
 			}
 	}
@@ -262,13 +262,13 @@ default:
 
 	/* a few sanity checks */
 	if (blocksize <= NWRAP)
-		usage_exit(1, "blocksize must be greater than %d\n", NWRAP);
+		errx(1, "blocksize must be greater than %d\n", NWRAP);
 
 	if (maxnlpc >= blocksize)
-		usage_exit(1, "the predictor order must be less than the block size\n");
+		errx(1, "the predictor order must be less than the block size\n");
 
 	if (ulawZeroMerge == 1 && ftype != TYPE_GENERIC_ULAW)
-		usage_exit(1, "the -u flag is only applicable to ulaw coding\n");
+		errx(1, "the -u flag is only applicable to ulaw coding\n");
 
 	/* this chunk just sets up the input and output files */
 	nfilename = argc - optind;
@@ -290,7 +290,7 @@ default:
 			if (extract) {
 				int newfilelen = oldfilelen - suffixlen;
 				if (strcmp(filenamei + newfilelen, FILESUFFIX))
-					usage_exit(1, "file name does not end in %s: %s\n", FILESUFFIX,
+					errx(1, "file name does not end in %s: %s\n", FILESUFFIX,
 						   filenamei);
 				tmpfilename[newfilelen] = '\0';
 			} else
@@ -304,7 +304,7 @@ default:
 		filenameo = argv[argc - 1];
 		break;
 	default:
-		usage_exit(1, NULL);
+		errx(1, NULL);
 	}
 
 	if (strcmp(filenamei, minusstr)) {
@@ -327,11 +327,11 @@ default:
 
 		for (i = 0; i < ndiscard / BUFSIZ; i++)
 			if (fread(discardbuf, BUFSIZ, 1, filei) != 1)
-				usage_exit(1, "EOF on input when discarding header\n");
+				errx(1, "EOF on input when discarding header\n");
 
 		if (ndiscard % BUFSIZ != 0)
 			if (fread(discardbuf, ndiscard % BUFSIZ, 1, filei) != 1)
-				usage_exit(1, "EOF on input when discarding header\n");
+				errx(1, "EOF on input when discarding header\n");
 	}
 	if (!extract) {
 		float *maxresn;
@@ -354,10 +354,10 @@ default:
 			if (wavhdr == NULL) {
 				if (wtype == 0)
 					/* the header must have been invalid */
-					usage_exit(1, "input file is not a valid RIFF WAVE file\n");
+					errx(1, "input file is not a valid RIFF WAVE file\n");
 				else
 					/* the wave type is wrong */
-					usage_exit(1, "RIFF WAVE file has unhandled format tag %d\n", wtype);
+					errx(1, "RIFF WAVE file has unhandled format tag %d\n", wtype);
 			} else {
 				/* we have a valid RIFF WAVE so override
 				 * anything the user may have said to do with
@@ -431,7 +431,7 @@ default:
 		}
 		/* write magic number */
 		if (fwrite(magic, strlen(magic), 1, fileo) != 1)
-			usage_exit(1, "could not write the magic number\n");
+			errx(1, "could not write the magic number\n");
 
 		/* write version number */
 		putc_exit(version, fileo);
@@ -443,7 +443,7 @@ default:
 		maxresn = parseList(maxresnstr, nchan);
 		for (chan = 0; chan < nchan; chan++)
 			if (maxresn[chan] < MINBITRATE)
-				usage_exit(1, "channel %d: expected bit rate must be >= %3.1f: %3.1f\n",
+				errx(1, "channel %d: expected bit rate must be >= %3.1f: %3.1f\n",
 					   chan, MINBITRATE, maxresn[chan]);
 			else
 				maxresn[chan] -= 3.0;
@@ -718,7 +718,7 @@ default:
 		for (i = 0; i < nskip; i++) {
 			int byte = getc(filei);
 			if (byte == EOF)
-				usage_exit(1, "File too short for requested alignment\n");
+				errx(1, "File too short for requested alignment\n");
 			putc_exit(byte, fileo);
 		}
 
@@ -730,7 +730,7 @@ default:
 			while (version > MAX_VERSION) {
 				int byte = getc(filei);
 				if (byte == EOF)
-					usage_exit(1, "No magic number\n");
+					errx(1, "No magic number\n");
 				if (magic[nscan] != '\0' && byte == magic[nscan])
 					nscan++;
 				else if (magic[nscan] == '\0' && byte <= MAX_VERSION)
