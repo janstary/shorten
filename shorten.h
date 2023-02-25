@@ -117,8 +117,6 @@ extern int getc_exit_val;
 
 #undef	uchar
 #define uchar	unsigned char
-#undef	ushort
-#define ushort	unsigned short
 #undef	ulong
 #define ulong	unsigned long
 

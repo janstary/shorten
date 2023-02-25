@@ -151,7 +151,7 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
   }
   case TYPE_U16HL:
   case TYPE_U16LH: {
-    ushort *readbufp = (ushort*) readbuf;
+    uint16_t *readbufp = (uint16_t*) readbuf;
     if(nchan == 1)
       for(i = 0; i < nread; i++)
 	data0[i] = *readbufp++;
@@ -294,7 +294,7 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
   }
   case TYPE_U16HL:
   case TYPE_U16LH: {
-    ushort *writebufp = (ushort*) writebuf;
+    uint16_t *writebufp = (uint16_t*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
 	*writebufp++ = CAPU16(data0[i]);
