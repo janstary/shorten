@@ -12,21 +12,9 @@
 
 void *pmalloc(size) ulong size; {
   void *ptr;
-
-#if defined(DOS_MALLOC_FEATURE) && !defined(_WINDOWS)	/* mrhmod */
-  fprintf(stderr, "requesting %ld bytes: ", size);
-#endif
   ptr = malloc(size);
-#if defined(DOS_MALLOC_FEATURE) && !defined(_WINDOWS)	/* mrhmod */
-  if(ptr == NULL)
-    fprintf(stderr, "denied\n");
-  else
-    fprintf(stderr, "accepted\n");
-#endif
-
   if(ptr == NULL)
     perror_exit("malloc(%ld)", size);
-
   return(ptr);
 }
 

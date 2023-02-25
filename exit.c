@@ -8,10 +8,8 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-#ifndef MSDOS
 # include <unistd.h>
 # include <errno.h>
-#endif
 # include <setjmp.h>
 # include <stdarg.h>
 # include "shorten.h"
@@ -93,9 +91,7 @@ void perror_exit(char* fmt, ...) {
     fprintf(stderr, "%s: ", argv0);
     (void) vfprintf(stderr, fmt, args);
     (void) fprintf(stderr, ": ");
-#ifndef MSDOS
     perror("\0");
-#endif
     
 #endif /* _WINDOWS */
   }

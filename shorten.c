@@ -16,14 +16,9 @@
 
 #include "shorten.h"
 
-#ifndef MSDOS
 char *readmode = "r";
 char *writemode = "w";
 #define FILESUFFIX ".shn"
-#else
-char *readmode = "rb";
-char *writemode = "wb";
-#endif
 
 char *argv0 = "shorten";
 int getc_exit_val;
@@ -203,14 +198,6 @@ shorten(stdi, stdo, argc, argv)
 	long datalen = -1;
 	Riff_Wave_Header *wavhdr = NULL;
 	char *minusstr = "-";
-
-#ifdef MSDOS
-#ifdef MSDOS_DO_TIMING
-	clock_t startTime, endTime;
-
-	startTime = clock();
-#endif
-#endif
 
 #ifdef _WINDOWS
 
@@ -409,15 +396,10 @@ default:
 	nfilename = argc - optind;
 	switch (nfilename) {
 	case 0:
-#ifndef MSDOS
 		filenamei = minusstr;
 		filenameo = minusstr;
-#else
-		usage_exit(1, "must specify both input and output file when running under DOS\n");
-#endif
 		break;
 	case 1:{
-#ifndef MSDOS
 			int oldfilelen, suffixlen, maxlen;
 
 			filenamei = argv[argc - 1];
@@ -437,9 +419,6 @@ default:
 				strcat(tmpfilename, FILESUFFIX);
 
 			filenameo = tmpfilename;
-#else
-			usage_exit(1, "must specify both input and output file when running under DOS\n");
-#endif
 			break;
 		}
 	case 2:
@@ -455,9 +434,6 @@ default:
 			perror_exit("fopen(\"%s\", \"%s\")", filenamei, readmode);
 	} else {
 		filei = stdi;
-#ifdef MSDOS
-		setmode(fileno(filei), O_BINARY);
-#endif
 	}
 
 	if (strcmp(filenameo, minusstr)) {
@@ -465,9 +441,6 @@ default:
 			perror_exit("fopen(\"%s\", \"%s\")", filenameo, writemode);
 	} else {
 		fileo = stdo;
-#ifdef MSDOS
-		setmode(fileno(fileo), O_BINARY);
-#endif
 	}
 
 	/* discard header on input file - can't rely on fseek() here */
@@ -1133,13 +1106,6 @@ default:
 	if (nfilename == 1)
 		if (unlink(filenamei))
 			perror_exit("unlink(\"%s\")", filenamei);
-
-#ifdef MSDOS
-#ifdef MSDOS_DO_TIMING
-	endTime = clock();
-	printf("Elapsed time: %g sec\n", ((double)(endTime - startTime)) / CLOCKS_PER_SEC);
-#endif
-#endif
 
 	/* quit happy */
 	return (0);
