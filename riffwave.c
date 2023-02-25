@@ -54,8 +54,10 @@ static long fread_long (fp) FILE *fp; {
  * Retrieve a little-endian short integer from a char array, again
  * portably.
  */
-static short short_at (p) unsigned char *p; {
-  return ((short)p[1] << 8) | p[0];
+static int16_t
+s16le (unsigned char *p)
+{
+  return ((int16_t)p[1] << 8) | p[0];
 }
 
 /*
@@ -157,9 +159,9 @@ FILE *filei; int *ftype, *nchan; long *datalen; int *wtype;
       }
       cklen -= 16;
       write_hdr(buf, 16, hdr);
-      switch(short_at(buf)) { 	      /* WAVE_FORMAT */
+      switch(s16le(buf)) { 	      /* WAVE_FORMAT */
       case WAVE_FORMAT_PCM:
-	switch (short_at(buf+14)) {   /* bits per sample */
+	switch (s16le(buf+14)) {   /* bits per sample */
 	case 8:
 	  *ftype = TYPE_U8;
 	  break;
@@ -181,11 +183,11 @@ FILE *filei; int *ftype, *nchan; long *datalen; int *wtype;
 	/* We don't understand this format */
 	free_header(hdr);
 	if (wtype)
-		*wtype = short_at(buf);
+		*wtype = s16le(buf);
 	return NULL;
       }
 
-      if ((*nchan = short_at(buf+2)) < 1) { /* at least one channel */
+      if ((*nchan = s16le(buf+2)) < 1) { /* at least one channel */
 	free_header(hdr);
 	return NULL;
       }
