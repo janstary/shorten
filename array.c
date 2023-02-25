@@ -6,18 +6,19 @@
 *                                                                             *
 ******************************************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <err.h>
+
 #include "shorten.h"
 
 void *
 pmalloc(size_t size)
 {
 	void *ptr;
-	ptr = malloc(size);
-	if (ptr == NULL)
-		perror_exit("malloc(%ld)", size);
-	return (ptr);
+	if ((ptr = calloc(1, size)) == NULL)
+		err(1, NULL);
+	return ptr;
 }
 
 long **

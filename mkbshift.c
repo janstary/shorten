@@ -7,6 +7,8 @@
 ******************************************************************************/
 
 # include <stdio.h>
+# include <err.h>
+
 # include "shorten.h"
 
 # define USIZE 256
@@ -26,9 +28,8 @@ int main() {
   long **forwardmap = long2d((ulong) SHIFTSIZE, (ulong) USIZE);
   long **reversemap = long2d((ulong) SHIFTSIZE, (ulong) USIZE);
 
-  fout = fopen(filename, writemode);
-  if(fout == NULL)
-    perror_exit("fopen(\"%s\", \"%s\")", filename, writemode);
+  if ((fout = fopen(filename, writemode)) == NULL)
+    err(1, "%s", filename);
 
   for(i = 0; i < USIZE; i++) tab[i] = 0;
 
@@ -68,7 +69,7 @@ int main() {
   for(shift = 0; shift < SHIFTSIZE; shift++)
     for(i = 0; i < USIZE; i++)
       if(forwardmap[shift][reversemap[shift][i]] != i - HUSIZE)
-       error_exit("identity maping failed for shift: %d\tindex: %d\n",shift,i);
+       errx(1, "identity maping failed for shift: %d\tindex: %d\n",shift,i);
 
   /* print out the ulaw_inward lookup table */
   fprintf(fout, "char ulaw_inward[%d][%d] = {\n", SHIFTSIZE, USIZE);
@@ -95,6 +96,5 @@ int main() {
       fprintf(fout, "%ld}\n};\n", reversemap[shift][USIZE - 1]);
   }
 
-  /* exit happy */
   return(0);
 }

@@ -5,8 +5,9 @@
 *       See the file LICENSE for conditions on distribution and usage         *
 *                                                                             *
 ******************************************************************************/
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <err.h>
 
 #include "shorten.h"
 
@@ -76,16 +77,12 @@ unsigned char *buf; int len; Riff_Wave_Header *hdr;
 	hdr->nblk_alloc += NBLOCKS_INIT;
 
 	size = hdr->nblk_alloc * sizeof(char *);
-	hdr->blocks = hdr->blocks ? realloc(hdr->blocks, size) : malloc(size);
-
-	if (!hdr->blocks)
-	  perror_exit("malloc or realloc(%ld)", size);
+	if ((hdr->blocks = realloc(hdr->blocks, size)) == NULL)
+	  err(1, "malloc");
 
 	size = hdr->nblk_alloc * sizeof(unsigned);
-	hdr->blklen = hdr->blklen ? realloc(hdr->blklen, size) : malloc(size);
-
-	if (!hdr->blklen)
-	  perror_exit("malloc or realloc(%ld)", size);
+	if ((hdr->blklen = realloc(hdr->blklen, size)) == NULL)
+	  err(1, "malloc");
       }
       hdr->blklen[hdr->nblocks-1] = 0;
       hdr->blocks[hdr->nblocks-1] = pmalloc(sizeof(unsigned char) *

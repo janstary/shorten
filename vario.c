@@ -6,9 +6,10 @@
 *                                                                             *
 ******************************************************************************/
 
-# include <math.h>
-# include <stdio.h>
 # include <stdlib.h>
+# include <stdio.h>
+# include <err.h>
+
 # include "shorten.h"
 
 extern char *argv0;
@@ -58,8 +59,8 @@ void var_get_init() {
   nbitget  = 0;
 }
 
-void word_put(buffer, stream) ulong buffer; FILE *stream; {
-
+void word_put(ulong buffer, FILE *stream)
+{
   *putbufp++ = buffer >> 24;
   *putbufp++ = buffer >> 16;
   *putbufp++ = buffer >>  8;
@@ -67,8 +68,7 @@ void word_put(buffer, stream) ulong buffer; FILE *stream; {
 
   if(putbufp - putbuf == BUFSIZ) {
     if(fwrite((char*) putbuf, 1, BUFSIZ, stream) != BUFSIZ)
-      update_exit(1, "failed to write compressed stream\n");
-
+      errx(1, "failed to write compressed stream\n");
     putbufp = putbuf;
   }
 }
@@ -78,7 +78,7 @@ void uvar_put(val, nbin, stream) ulong val; int nbin; FILE *stream; {
   int  i, nlobin;
 
   if(nbin >= MASKTABSIZE)
-    update_exit(1, "overflow of masktab[%d]\n", MASKTABSIZE);
+    errx(1, "overflow of masktab[%d]\n", MASKTABSIZE);
 
   lobin = (1L << nbin) | (val & masktab[nbin]);
   nsd = val >> nbin;
@@ -131,7 +131,7 @@ word_get(FILE *stream)
   if(nbyteget < 4) {
     nbyteget += fread((char*) getbuf, 1, BUFSIZ, stream);
     if(nbyteget < 4)
-      update_exit(1, "premature EOF on compressed stream\n");
+      errx(1, "premature EOF on compressed stream\n");
     getbufp = getbuf;
   }
   buffer =
@@ -197,8 +197,7 @@ void var_put_quit(stream) FILE *stream; {
   /* and write out the remaining chunk in the buffer */
   if(fwrite((char*) putbuf, 1, putbufp - putbuf, stream) != 
      putbufp - putbuf)
-    update_exit(1, "failed to write compressed stream\n");
-
+    errx(1, "failed to write compressed stream\n");
   free((char*) putbuf);
 }
 

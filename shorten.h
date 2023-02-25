@@ -185,8 +185,6 @@ extern int	wav2poly (long*, int, long, int, float*, float*);
 /*********************/
 /* defined in exit.c */
 extern void	basic_exit (int);
-extern void	error_exit (char*,...);
-extern void	perror_exit (char*,...);
 extern void	usage_exit (int, char*,...);
 extern void	update_exit (int, char*,...);
 

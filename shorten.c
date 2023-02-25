@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <utime.h>
 #include <math.h>
+#include <err.h>
 
 #include "shorten.h"
 
@@ -66,7 +67,7 @@ init_offset(offset, nchan, nblock, ftype)
 		mean = 0x8000;
 		break;
 	default:
-		update_exit(1, "unknown file type: %d\n", ftype);
+		errx(1, "unknown file type: %d\n", ftype);
 	}
 
 	for (chan = 0; chan < nchan; chan++)
@@ -83,7 +84,7 @@ Satof(string)
 	/* this should have tighter checking */
 	for (i = 0; i < (int)strlen(string) && rval == 1; i++)
 		if (string[i] != '.' && (string[i] < '0' || string[i] > '9'))
-			usage_exit(1, "non-parseable float: %s\n", string);
+			errx(1, "non-parseable float: %s\n", string);
 	return ((float)atof(string));
 }
 
@@ -308,14 +309,14 @@ default:
 
 	if (strcmp(filenamei, minusstr)) {
 		if ((filei = fopen(filenamei, readmode)) == NULL)
-			perror_exit("fopen(\"%s\", \"%s\")", filenamei, readmode);
+			err(1, "%s", filenamei);
 	} else {
 		filei = stdi;
 	}
 
 	if (strcmp(filenameo, minusstr)) {
 		if ((fileo = fopen(filenameo, writemode)) == NULL)
-			perror_exit("fopen(\"%s\", \"%s\")", filenameo, writemode);
+			err(1, "%s", filenameo);
 	} else {
 		fileo = stdo;
 	}
@@ -785,7 +786,7 @@ default:
 				if (internal_ftype == TYPE_AU1 || internal_ftype == TYPE_AU2 ||
 				    internal_ftype == TYPE_AU3 || ftype == TYPE_AU1 ||
 				    ftype == TYPE_AU2 || ftype == TYPE_AU3)
-					error_exit("Not able to perform requested output format conversion\n");
+					errx(1, "Not able to perform requested output format conversion\n");
 			}
 		}
 		nchan = UINT_GET(CHANSIZE, filei);
@@ -970,9 +971,8 @@ default:
 
 	if (nfilename == 1)
 		if (unlink(filenamei))
-			perror_exit("unlink(\"%s\")", filenamei);
+			err(1, "%s", filenamei);
 
-	/* quit happy */
 	return (0);
 }
 
