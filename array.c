@@ -31,17 +31,3 @@ long **long2d(n0, n1) ulong n0, n1; {
   }
   return(array0);
 }
-
-float **float2d(n0, n1) ulong n0, n1; {
-  float **array0;
-
-  if((array0 = (float**) pmalloc((ulong) (n0 * sizeof(float*) +
-					 n0 * n1 * sizeof(float)))) != NULL ) {
-    float *array1 = (float*) (array0 + n0);
-    int i;
-
-    for(i = 0; i < n0; i++)
-      array0[i] = array1 + i * n1;
-  }
-  return(array0);
-}
