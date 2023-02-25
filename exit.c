@@ -118,13 +118,10 @@ void usage_exit(int exitcode, char* fmt, ...) {
     _asm { int 3 }  /* mrhmod - catch if debugging */
 #endif
     
-#ifndef _WINDOWS  /* mrhmod - must use exitmessage 'cos stderr not available */
     if(fmt != NULL) {
       fprintf(stderr, "%s: ", argv0);
       (void) vfprintf(stderr, fmt, args);
     }
-    fprintf(stderr, "%s: for more information use: %s -h\n", argv0, argv0);
-#endif /* _WINDOWS */
   }
   else
   {

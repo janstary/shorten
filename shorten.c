@@ -227,7 +227,7 @@ shorten(stdi, stdo, argc, argv)
 	{
 		int c;
 
-		while ((c = getopt(argc, argv, "a:b:c:d:hm:n:p:q:r:t:uv:x")) != -1)
+		while ((c = getopt(argc, argv, "a:b:c:d:m:n:p:q:r:t:uv:x")) != -1)
 			switch (c) {
 			case 'a':
 				if ((nskip = atoi(optarg)) < 0)
@@ -245,75 +245,15 @@ shorten(stdi, stdo, argc, argv)
 				if ((ndiscard = atoi(optarg)) < 0)
 					usage_exit(1, "number of bytes to discard must be positive\n");
 				break;
-			case 'h':
-#ifdef _WINDOWS
-				{
-					char totalMessage[2000];
-					char oneLine[90];
-					totalMessage[0] = '\0';
-#define PRINTF0(a) strcat(totalMessage,a)
-#define PRINTF1(a,b) sprintf(oneLine,a,b); strcat(totalMessage,oneLine)
-#define PRINTF2(a,b,c) sprintf(oneLine,a,b,c); strcat(totalMessage,oneLine)
-#define PRINTF3(a,b,c,d) sprintf(oneLine,a,b,c,d); strcat(totalMessage,oneLine)
-#else
-#define PRINTF0(a) printf(a)
-#define PRINTF1(a,b) printf(a,b)
-#define PRINTF2(a,b,c) printf(a,b,c)
-#define PRINTF3(a,b,c,d) printf(a,b,c,d)
-#endif
-
-				PRINTF3("%s: version %d.%s: (c) 1992-1999 Tony Robinson and SoftSound Ltd\n",
-				     argv0, FORMAT_VERSION, BUGFIX_RELEASE);
-				PRINTF1("%s: for more information see http://www.softsound.com/Shorten.html\n", argv0);
-#ifdef OLDHELP
-				PRINTF1("usage: %s [-hx] [-a #byte] [-b #sample] [-c #channel] [-d #discard]\n\t[-m #block] [-p #delay] [-q #bit] [-r #bit] [-t filetype]\n\t[input file] [output file]\n", argv0);
-#endif
-				PRINTF2("%s: usage: %s {options} [input file] [output file]\n", argv0,
-					argv0);
-				PRINTF1("  -a %-5dbytes to copy verbatim to align file\n", DEFAULT_NSKIP);
-				PRINTF1("  -b %-5dblock size\n", DEFAULT_BLOCK_SIZE);
-				PRINTF1("  -c %-5dnumber of channels\n", DEFAULT_NCHAN);
-				PRINTF1("  -d %-5dnumber of bytes to discard before compression or decompression\n", DEFAULT_NDISCARD);
-				PRINTF0("  -h      help (this message)\n");
-				PRINTF1("  -m %-5dnumber of past block for mean estimation\n",
-					(FORMAT_VERSION < 2) ? DEFAULT_V0NMEAN : DEFAULT_V2NMEAN);
-				PRINTF2("  -n %-5dminimum signal to noise ratio in dB (%d == lossless coding)\n",
-					DEFAULT_MINSNR, DEFAULT_MINSNR);
-				PRINTF1("  -p %-5dmaximum LPC predictor order (0 == fast polynomial predictor)\n", DEFAULT_MAXNLPC);
-				PRINTF1("  -q %-5dacceptable quantisation error in bits\n",
-					DEFAULT_QUANTERROR);
-				PRINTF2("  -r %-5smaximum number of bits per sample (%s == lossless coding)\n",
-				    DEFAULT_MAXRESNSTR, DEFAULT_MAXRESNSTR);
-				PRINTF0("  -t wav  specify the bit packing and byte ordering of the sample file from\n          {wav,ulaw,alaw,s8,u8,s16,u16,s16x,u16x,s16hl,u16hl,s16lh,u16lh}\n");
-				PRINTF0("  -u      merge the two zero codes in ulaw files\n");
-				PRINTF1("  -v %-5dformat version number\n", FORMAT_VERSION);
-				PRINTF0("  -x      extract (all other options except -a, -d and -t are ignored)\n");
-#ifdef _WINDOWS
-#ifdef WINDOWS_MESSAGEBOX
-				MessageBox(NULL, totalMessage, "Shorten Help", MB_OK | MB_ICONINFORMATION);
-				basic_exit(0);
-#else
-				error_exit("%s: usage: %s {options} [input file] [output file]\n",
-					   argv0, argv0);
-#endif
-			}
-#else
-				basic_exit(0);
-#endif
-#undef PRINTF0
-#undef PRINTF1
-#undef PRINTF2
-#undef PRINTF3
-				break;
-case 'm':
+			case 'm':
 				if ((nmean = atoi(optarg)) < 0)
 					usage_exit(1, "number of blocks for mean estimation must be positive\n");
 				break;
-case 'n':
+			case 'n':
 				if ((minsnr = atoi(optarg)) < 0)
 					usage_exit(1, "Useful signal to noise ratios are positive\n");
 				break;
-case 'p':
+			case 'p':
 				maxnlpc = atoi(optarg);
 				if (maxnlpc < 0 || maxnlpc > MAX_LPC_ORDER)
 					usage_exit(1, "linear prediction order must be in the range 0 ... %d\n", MAX_LPC_ORDER);
@@ -322,10 +262,10 @@ case 'q':
 				if ((quanterror = atoi(optarg)) < 0)
 					usage_exit(1, "quantisation level must be positive\n");
 				break;
-case 'r':
+			case 'r':
 				maxresnstr = optarg;
 				break;
-case 't':
+			case 't':
 				if (!strcmp(optarg, "au"))
 					ftype = TYPE_GENERIC_ULAW;
 				else if (!strcmp(optarg, "ulaw"))
@@ -357,16 +297,16 @@ case 't':
 				else
 					usage_exit(1, "unknown file type: %s\n", optarg);
 				break;
-case 'u':
+			case 'u':
 				ulawZeroMerge = 1;
 				break;
-case 'v':
+			case 'v':
 				version = atoi(optarg);
 				if (version < 0 || version > MAX_SUPPORTED_VERSION)
 					usage_exit(1, "currently supported versions are in the range %d ... %d\n",
 						   MIN_SUPPORTED_VERSION, MAX_SUPPORTED_VERSION);
 				break;
-case 'x':
+			case 'x':
 				extract = 1;
 				break;
 default:
