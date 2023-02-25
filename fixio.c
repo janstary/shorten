@@ -387,7 +387,7 @@ int find_bitshift(data, nitem, ftype) long *data; int nitem, ftype; {
   int i, bitshift;
   
   if(ftype == TYPE_AU1 || ftype == TYPE_AU2) {
-    bitshift = NBITPERLONG;
+    bitshift = NBITS;
     for(i = 0; i < nitem && 
 	(bitshift = MIN(bitshift, ulaw_maxshift[data[i]])) != 0; i++);
     if(ftype == TYPE_AU1)
@@ -413,7 +413,7 @@ int find_bitshift(data, nitem, ftype) long *data; int nitem, ftype; {
 	for(i = 0; i < nitem; i++) data[i] >>= bitshift;
     }
     else
-      bitshift = NBITPERLONG;
+      bitshift = NBITS;
   }
 
   return(bitshift);

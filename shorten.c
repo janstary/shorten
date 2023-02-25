@@ -542,8 +542,8 @@ default:
 				/* test for excessive and exploitable
 				 * quantisation, and exploit!! */
 				bitshift = find_bitshift(cbuffer, blocksize, ftype) + quanterror;
-				if (bitshift > NBITPERLONG)
-					bitshift = NBITPERLONG;
+				if (bitshift > NBITS)
+					bitshift = NBITS;
 
 				/* find mean offset : N.B. this code
 				 * duplicated */
@@ -557,7 +557,7 @@ default:
 						coffset = sum / nmean;
 					else {
 						fulloffset = sum / nmean;
-						if (bitshift == NBITPERLONG && version >= 2)
+						if (bitshift == NBITS && version >= 2)
 							coffset = ROUNDEDSHIFTDOWN(fulloffset, lastbitshift);
 						else
 							coffset = ROUNDEDSHIFTDOWN(fulloffset, bitshift);
@@ -565,7 +565,7 @@ default:
 				}
 
 				/* find the best model */
-				if (bitshift == NBITPERLONG && version >= 2) {
+				if (bitshift == NBITS && version >= 2) {
 					bitshift = lastbitshift;
 					fnd = FN_ZERO;
 				} else {

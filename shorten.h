@@ -23,7 +23,7 @@
 #define DEFAULT_NCHAN		1
 #define DEFAULT_NSKIP		0
 #define DEFAULT_NDISCARD	0
-#define NBITPERLONG		32
+#define NBITS			32
 #define DEFAULT_MINSNR          256
 #define DEFAULT_MAXRESNSTR	"32.0"
 #define DEFAULT_QUANTERROR	0
