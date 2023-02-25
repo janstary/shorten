@@ -13,7 +13,7 @@ manext = 1
 .c:	; $(CC) $(CFLAGS) -o $* $*.c
 .c.o:	; $(CC) $(CFLAGS) -c $*.c
 
-all: shorten shorten.man
+all: shorten shorten.1
 
 install: shorten
 	cp shorten $(exec_prefix)
@@ -33,9 +33,6 @@ mkbshift: $(COBJS) $(BOBJS)
 
 license.c: LICENSE
 	awk -f license.awk < LICENSE > license.c
-
-shorten.man: shorten.1
-	nroff -man shorten.1 | col -b > shorten.man
 
 test: shorten
 	./shorten -x mvs_wav.shn tmp.wav
