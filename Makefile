@@ -46,7 +46,7 @@ release: test spotless shorten.man
 	./mkRelease
 
 clean:
-	rm -f $(COBJS) $(BOBJS) $(SOBJS)
+	rm -f $(COBJS) $(BOBJS) $(SOBJS) *~
 
 spotless: clean
 	rm -f shorten mkbshift mkbshift.exe tmp.wav *~
