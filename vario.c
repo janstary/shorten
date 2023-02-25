@@ -110,18 +110,23 @@ void uvar_put(val, nbin, stream) ulong val; int nbin; FILE *stream; {
   }
 }
 
-void ulong_put(val, stream) ulong val; FILE *stream; {
-  int i, nbit;
+void
+ulong_put(uint32_t val, FILE *stream)
+{
+  int i;
+  uint32_t nbit;
 
   for(i = 31; i >= 0 && (val & (1L << i)) == 0; i--);
   nbit = i + 1;
 
-  uvar_put((ulong) nbit, ULONGSIZE, stream);
+  uvar_put(nbit, 2, stream);
   uvar_put(val & masktab[nbit], nbit, stream);
 }
 
-ulong word_get(stream) FILE *stream; {
-  ulong buffer;
+uint32_t
+word_get(FILE *stream)
+{
+  uint32_t buffer;
 
   if(nbyteget < 4) {
     nbyteget += fread((char*) getbuf, 1, BUFSIZ, stream);
@@ -129,17 +134,20 @@ ulong word_get(stream) FILE *stream; {
       update_exit(1, "premature EOF on compressed stream\n");
     getbufp = getbuf;
   }
-  buffer = (((long) getbufp[0]) << 24) | (((long) getbufp[1]) << 16) |
-    (((long) getbufp[2]) <<  8) | ((long) getbufp[3]);
-
+  buffer =
+	  (((uint32_t) getbufp[0]) << 24) |
+	  (((uint32_t) getbufp[1]) << 16) |
+	  (((uint32_t) getbufp[2]) <<  8) |
+	  ((uint32_t)  getbufp[3]);
   getbufp += 4;
   nbyteget -= 4;
-
   return(buffer);
 }
 
-long uvar_get(nbin, stream) int nbin; FILE *stream; {
-  long result;
+uint32_t
+uvar_get(int nbin, FILE *stream)
+{
+  uint32_t result;
 
   if(nbitget == 0) {
     gbuffer = word_get(stream);
@@ -170,9 +178,11 @@ long uvar_get(nbin, stream) int nbin; FILE *stream; {
   return(result);
 }
 
-ulong ulong_get(stream) FILE *stream; {
-  unsigned int nbit = uvar_get(ULONGSIZE, stream);
-  return(uvar_get(nbit, stream));
+uint32_t
+ulong_get(FILE *stream)
+{
+  uint16_t nbit = uvar_get(2, stream);
+  return uvar_get(nbit, stream);
 }
 
 void var_put(val, nbin, stream) long val; int nbin; FILE *stream; {
@@ -192,11 +202,12 @@ void var_put_quit(stream) FILE *stream; {
   free((char*) putbuf);
 }
 
-long var_get(nbin, stream) int nbin; FILE *stream; {
-  ulong uvar = uvar_get(nbin + 1, stream);
+int32_t
+var_get(nbin, stream) int nbin; FILE *stream; {
+  uint32_t uvar = uvar_get(nbin + 1, stream);
 
-  if(uvar & 1) return((long) ~(uvar >> 1));
-  else return((long) (uvar >> 1));
+  if(uvar & 1) return((int32_t) ~(uvar >> 1));
+  else return((int32_t) (uvar >> 1));
 }
 
 void var_get_quit() {

@@ -6,6 +6,8 @@
 *                                                                             *
 ******************************************************************************/
 
+#include <stdint.h>
+
 #define MAGIC			"ajkg"
 #define FORMAT_VERSION		2
 #define MIN_SUPPORTED_VERSION	1
@@ -159,13 +161,13 @@ extern void	fix_bitshift (long*, int, int, int);
 extern void	var_put_init (void);
 extern void	uvar_put (ulong, int, FILE*);
 extern void	var_put (long, int, FILE*);
-extern void	ulong_put (ulong, FILE*);
+extern void	ulong_put (uint32_t, FILE*);
 extern void	var_put_quit (FILE*);
 
 extern void	var_get_init (void);
-extern long	uvar_get (int, FILE*);
-extern long	var_get (int, FILE*);
-extern ulong	ulong_get (FILE*);
+extern uint32_t	uvar_get (int, FILE*);
+extern int32_t	var_get (int, FILE*);
+extern uint32_t	ulong_get (FILE*);
 extern void	var_get_quit (void);
 
 extern int	sizeof_uvar (ulong, int);
@@ -173,7 +175,7 @@ extern int	sizeof_var (long, int);
 
 extern void	mkmasktab (void);
 extern void	word_put (ulong, FILE*);
-extern ulong	word_get (FILE*);
+extern uint32_t	word_get (FILE*);
 
 /********************/
 /* defined in lpc.c */
