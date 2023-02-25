@@ -1,7 +1,7 @@
 .SUFFIS: .c .o
 BOBJS = mkbshift.o
 COBJS = exit.o array.o Sulawalaw.o
-SOBJS = shorten.o fixio.o vario.o poly.o lpc.o dupfinfo.o riffwave.o license.o
+SOBJS = shorten.o fixio.o vario.o poly.o lpc.o dupfinfo.o riffwave.o
 CC    = cc
 CFLAGS= -O
 
@@ -30,9 +30,6 @@ bitshift.h: mkbshift
 
 mkbshift: $(COBJS) $(BOBJS)
 	$(CC) $(CFLAGS) -o mkbshift $(COBJS) $(BOBJS) -lm
-
-license.c: LICENSE
-	awk -f license.awk < LICENSE > license.c
 
 test: shorten
 	./shorten -x mvs_wav.shn tmp.wav

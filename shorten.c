@@ -206,7 +206,7 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
   /* this block just processes the command line arguments */
   { int c;
 
-    while((c = getopt(argc, argv, "a:b:c:d:hlm:n:p:q:r:t:uv:x")) != -1)
+    while((c = getopt(argc, argv, "a:b:c:d:hm:n:p:q:r:t:uv:x")) != -1)
       switch(c) {
       case 'a':
 	if((nskip = atoi(optarg)) < 0)
@@ -254,7 +254,6 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
   PRINTF1("  -c %-5dnumber of channels\n", DEFAULT_NCHAN); 
   PRINTF1("  -d %-5dnumber of bytes to discard before compression or decompression\n", DEFAULT_NDISCARD); 
   PRINTF0("  -h      help (this message)\n");
-  PRINTF0("  -l      print the license giving the distribution and usage conditions\n");
   PRINTF1("  -m %-5dnumber of past block for mean estimation\n",
 	  (FORMAT_VERSION < 2) ? DEFAULT_V0NMEAN : DEFAULT_V2NMEAN);
   PRINTF2("  -n %-5dminimum signal to noise ratio in dB (%d == lossless coding)\n",
@@ -285,10 +284,6 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
 #undef PRINTF2
 #undef PRINTF3
     break;
-      case 'l':
-	license();
-	basic_exit(0);
-	break;
       case 'm':
 	if((nmean = atoi(optarg)) < 0)
 	  usage_exit(1, "number of blocks for mean estimation must be positive\n");

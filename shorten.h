@@ -238,7 +238,3 @@ Riff_Wave_Header *riff_wave_prochdr PROTO ((FILE *, int *, int *, long *, int *)
 void              write_header PROTO ((Riff_Wave_Header *, FILE *));
 void              free_header PROTO ((Riff_Wave_Header *));
 void              verbatim_file PROTO ((FILE *, FILE *));
-
-/************************/
-/* defined in license.c */
-extern void	license PROTO ((void));
