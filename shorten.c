@@ -880,14 +880,16 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
     internal_ftype = UINT_GET(TYPESIZE, filei);
 
     /* has the user requested a change in file type? */
-    if(internal_ftype != ftype)
-      if(ftype == TYPE_EOF)
+    if(internal_ftype != ftype) {
+      if(ftype == TYPE_EOF) {
 	ftype = internal_ftype;    /*  no problems here */
-      else             /* check that the requested conversion is valid */
+      } else {            /* check that the requested conversion is valid */
 	if(internal_ftype == TYPE_AU1 || internal_ftype == TYPE_AU2 ||
 	   internal_ftype == TYPE_AU3 || ftype == TYPE_AU1 ||
 	   ftype == TYPE_AU2 || ftype == TYPE_AU3)
 	  error_exit("Not able to perform requested output format conversion\n");
+      }
+    }
     
     nchan = UINT_GET(CHANSIZE, filei);
     
