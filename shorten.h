@@ -121,8 +121,6 @@ extern int getc_exit_val;
 #undef	ulong
 #define ulong	unsigned long
 
-typedef char schar;
-
 /************************/
 /* defined in shorten.c */
 extern void	init_offset	(long**, int, int, int);

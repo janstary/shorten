@@ -22,17 +22,17 @@ all: ${BIN}
 ${BIN}: ${OBJS} bitshift.h
 	${CC} ${CFLAGS} -o ${BIN} ${OBJS}
 
-lint: ${MAN}
-	mandoc -Tlint ${MAN}
-
-%.o: %.c shorten.h
-	${CC} ${CFLAGS} -c $<
-
 bitshift.h: mkbshift
 	./mkbshift
 
 mkbshift: mkbshift.c exit.o array.o ualaw.o
 	$(CC) $(CFLAGS) -o mkbshift mkbshift.c exit.o array.o ualaw.o -lm
+
+%.o: %.c shorten.h
+	${CC} ${CFLAGS} -c $<
+
+lint: ${MAN}
+	mandoc -Tlint ${MAN}
 
 test: shorten
 	./shntest

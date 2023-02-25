@@ -21,7 +21,7 @@ static int sizeof_sample[TYPE_EOF];
 
 void init_sizeof_sample() {
   sizeof_sample[TYPE_AU1]   = sizeof(uchar);
-  sizeof_sample[TYPE_S8]    = sizeof(schar);
+  sizeof_sample[TYPE_S8]    = sizeof(char);
   sizeof_sample[TYPE_U8]    = sizeof(uchar);
   sizeof_sample[TYPE_S16HL] = sizeof(short);
   sizeof_sample[TYPE_U16HL] = sizeof(short);
@@ -127,7 +127,7 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
     break;
   }
   case TYPE_S8: {
-    schar *readbufp = (schar*) readbuf;
+    char *readbufp = (char*) readbuf;
     if(nchan == 1)
       for(i = 0; i < nread; i++)
 	data0[i] = *readbufp++;
@@ -270,7 +270,7 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     break;
   }
   case TYPE_S8: {
-    schar *writebufp = (schar*) writebuf;
+    char *writebufp = (char*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
 	*writebufp++ = CAPMAXSCHAR(data0[i]);

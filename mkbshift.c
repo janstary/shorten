@@ -71,7 +71,7 @@ int main() {
        error_exit("identity maping failed for shift: %d\tindex: %d\n",shift,i);
 
   /* print out the ulaw_inward lookup table */
-  fprintf(fout, "schar ulaw_inward[%d][%d] = {\n", SHIFTSIZE, USIZE);
+  fprintf(fout, "char ulaw_inward[%d][%d] = {\n", SHIFTSIZE, USIZE);
   for(shift = 0; shift < SHIFTSIZE; shift++) {
     fprintf(fout, "{");
     for(i = 0; i < USIZE - 1; i++)
