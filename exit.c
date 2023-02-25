@@ -18,11 +18,6 @@ extern char *argv0;
 extern char *filenameo;
 extern FILE *fileo;
 
-#ifdef _WINDOWS
-/* mrhmod - warn about attempt to use stderr (use perror_exit()/error_exit() instead) */
-char *stderrWarningMsg = "caught attempt to use stderr";
-#endif
-
 jmp_buf exitenv;
 char    *exitmessage;
 
@@ -52,14 +47,8 @@ void error_exit(char* fmt, ...) {
 
   if(exitmessage == NULL)
   {
-#if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
-    _asm { int 3 }  /* mrhmod - catch if debugging */
-#endif
-    
-#ifndef _WINDOWS  /* mrhmod - must use exitmessage 'cos stderr not available */
     fprintf(stderr, "%s: ", argv0);
     (void) vfprintf(stderr, fmt, args);
-#endif /* _WINDOWS */
   }
   else
   {
@@ -83,17 +72,10 @@ void perror_exit(char* fmt, ...) {
   va_start(args, fmt);
 
   if(exitmessage == NULL) {
-#if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
-    _asm { int 3 }  /* mrhmod - catch if debugging */
-#endif
-    
-#ifndef _WINDOWS /* mrhmod - must use exitmessage 'cos stderr not available */
     fprintf(stderr, "%s: ", argv0);
     (void) vfprintf(stderr, fmt, args);
     (void) fprintf(stderr, ": ");
     perror("\0");
-    
-#endif /* _WINDOWS */
   }
   else {
     (void) vsprintf(exitmessage, fmt, args);
@@ -110,14 +92,8 @@ void perror_exit(char* fmt, ...) {
 
 void usage_exit(int exitcode, char* fmt, ...) {
   va_list args;
-
   va_start(args, fmt);
-
   if(exitmessage == NULL) {
-#if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
-    _asm { int 3 }  /* mrhmod - catch if debugging */
-#endif
-    
     if(fmt != NULL) {
       fprintf(stderr, "%s: ", argv0);
       (void) vfprintf(stderr, fmt, args);
@@ -128,37 +104,22 @@ void usage_exit(int exitcode, char* fmt, ...) {
     (void) vsprintf(exitmessage, fmt, args);
     strcat(exitmessage, "\n");
   }
-
   va_end(args);
-
   basic_exit(exitcode);
 }
 
 
 void update_exit(int exitcode, char* fmt, ...) {
   va_list args;
-
   va_start(args, fmt);
-
   if(exitmessage == NULL) {
-#if defined(_WINDOWS) && defined(_DEBUG) && !defined(WIN32)
-    _asm { int 3 }  /* mrhmod - catch if debugging */
-#endif
-
-#ifndef _WINDOWS  /* mrhmod - must use exitmessage 'cos stderr not available */
     if(fmt != NULL) {
       fprintf(stderr, "%s: ", argv0);
       (void) vfprintf(stderr, fmt, args);
     }
     fprintf(stderr, "%s: version %d.%s\n",argv0,FORMAT_VERSION,BUGFIX_RELEASE);
     fprintf(stderr, "%s: please report this problem to ajr@softsound.com\n", argv0);
-#endif /* _WINDOWS */
   }
-#ifdef _WINDOWS /* mrhmod - output something */
-  error_exit( fmt, args );
-#endif
-
   va_end(args);
-
   basic_exit(exitcode);
 }

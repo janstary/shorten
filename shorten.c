@@ -118,41 +118,6 @@ parseList(maxresnstr, nchan)
 	return (floatval);
 }
 
-#ifdef _WINDOWS
-
-/* Function to check whether shorten should abort, when running as a windows program */
-static void
-CheckWindowsAbort(void)
-{
-
-#ifndef WIN32
-	/* If we are not in Win32, we need to put in a Windows message
-	 * handler to * allow 'multi tasking' to continue. * WIN32 (Windows
-	 * 95 and NT) does not need to do this, as proper preemptive *
-	 * multitasking & threading is implemented */
-	MSG localMessage;
-
-	while (PeekMessage(&localMessage, NULL, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&localMessage);
-		DispatchMessage(&localMessage);
-	}
-#endif
-
-#ifdef WINDOWS_ABORT_ALLOWED
-	/* If abort is allowed, see if the abort flag has been set: */
-	{
-		extern int abortFlag;
-		if (abortFlag) {
-			/* If the abort flag is set, it means we should
-			 * terminate processing */
-			usage_exit(-2, "shorten stopped by user\n");
-		}
-	}
-#endif
-}
-
-#endif
-
 int
 dupfileinfo(path0, path1)
 	char *path0, *path1;
@@ -198,30 +163,6 @@ shorten(stdi, stdo, argc, argv)
 	long datalen = -1;
 	Riff_Wave_Header *wavhdr = NULL;
 	char *minusstr = "-";
-
-#ifdef _WINDOWS
-
-	/* Need to set the FILE pointers to null, so we know if they have to
-	 * be closed on abort */
-	filei = fileo = NULL;
-
-	/* Now we need to set up the error handler for Windows */
-	{
-		extern jmp_buf exitenv;
-		int retVal;
-
-		if ((retVal = setjmp(exitenv)) != 0) {
-			/* If an error, make sure (at least) that files are
-			 * closed. fileo will already have been closed in
-			 * basic_exit(); Plugging of memory leaks will be
-			 * dealt with in a future release */
-			if (filei)
-				fclose(filei);
-			return retVal;
-		}
-	}
-
-#endif
 
 	/* this block just processes the command line arguments */
 	{
@@ -310,11 +251,7 @@ case 'q':
 				extract = 1;
 				break;
 default:
-#ifdef _WINDOWS
-				usage_exit(1, "apparently too many file names");	/* mrhmod */
-#else
 				usage_exit(1, NULL);
-#endif
 				break;
 			}
 	}
@@ -570,12 +507,6 @@ default:
 		/* this is the main read/code/write loop for the whole file */
 		while ((nread = fread_type(buffer, ftype, nchan,
 					blocksize, filei, &datalen)) != 0) {
-
-#ifdef _WINDOWS
-			/* Include processing to enable Windows program to
-			 * abort */
-			CheckWindowsAbort();
-#endif
 
 			/* put blocksize if changed */
 			if (nread != blocksize) {
@@ -896,12 +827,6 @@ default:
 		/* get commands from file and execute them */
 		chan = 0;
 		while ((cmd = uvar_get(FNSIZE, filei)) != FN_QUIT) {
-#ifdef _WINDOWS
-			/* Include processing to enable Windows program to
-			 * abort */
-			CheckWindowsAbort();
-#endif
-
 			switch (cmd) {
 			case FN_ZERO:
 			case FN_DIFF0:
