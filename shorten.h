@@ -193,8 +193,8 @@ extern void	update_exit (int, char*,...);
 
 /**********************/
 /* defined in array.c */
-extern void* 	pmalloc (ulong);
-extern long**	long2d (ulong, ulong);
+extern void* 	pmalloc (size_t);
+extern long**	long2d (size_t, size_t);
 
 /****************************/
 /* defined in dupfileinfo.c */

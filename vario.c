@@ -36,7 +36,7 @@ static int    nbitput;
 void var_put_init() {
   mkmasktab();
 
-  putbuf   = (uchar*) pmalloc((ulong) BUFSIZ);
+  putbuf   = (uchar*) pmalloc(BUFSIZ);
   putbufp  = putbuf;
   pbuffer  = 0;
   nbitput  = 0;
@@ -51,7 +51,7 @@ static int    nbitget;
 void var_get_init() {
   mkmasktab();
 
-  getbuf   = (uchar*) pmalloc((ulong) BUFSIZ);
+  getbuf   = (uchar*) pmalloc(BUFSIZ);
   getbufp  = getbuf;
   nbyteget = 0;
   gbuffer  = 0;

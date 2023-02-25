@@ -11,8 +11,7 @@
 #include "shorten.h"
 
 void *
-pmalloc(size)
-	ulong size;
+pmalloc(size_t size)
 {
 	void *ptr;
 	ptr = malloc(size);
@@ -22,18 +21,16 @@ pmalloc(size)
 }
 
 long **
-long2d(n0, n1)
-	ulong n0, n1;
+long2d(size_t num, size_t each)
 {
-	long **array0;
+	long **a;
 
-	if ((array0 = (long **)pmalloc((ulong) (n0 * sizeof(long *) +
-					n0 * n1 * sizeof(long)))) != NULL) {
-		long *array1 = (long *)(array0 + n0);
+	if ((a = (long **)
+	pmalloc((num * sizeof(long*) + num * each * sizeof(long)))) != NULL) {
+		long *b = (long *)(a + num);
 		int i;
-
-		for (i = 0; i < n0; i++)
-			array0[i] = array1 + i * n1;
+		for (i = 0; i < num; i++)
+			a[i] = b + i * each;
 	}
-	return (array0);
+	return a;
 }

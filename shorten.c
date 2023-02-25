@@ -101,7 +101,7 @@ parseList(maxresnstr, nchan)
 	strcpy(str, maxresnstr);
 
 	/* grab space for the floating point parses */
-	floatval = pmalloc((ulong) (nchan * sizeof(*floatval)));
+	floatval = pmalloc(nchan * sizeof(*floatval));
 
 	/* loop for all floats in the arguement */
 	floatstr = strtok(str, ",");
@@ -283,7 +283,7 @@ default:
 			oldfilelen = strlen(filenamei);
 			suffixlen = strlen(FILESUFFIX);
 			maxlen = oldfilelen + suffixlen;
-			tmpfilename = pmalloc((ulong) (maxlen + 1));
+			tmpfilename = pmalloc(maxlen + 1);
 			strcpy(tmpfilename, filenamei);
 
 			if (extract) {
@@ -396,7 +396,7 @@ default:
 		nwrap = MAX(NWRAP, maxnlpc);
 
 		if (maxnlpc > 0)
-			qlpc = (int *)pmalloc((ulong) (maxnlpc * sizeof(*qlpc)));
+			qlpc = (int *) pmalloc((maxnlpc * sizeof(*qlpc)));
 
 		/* verbatim copy of skip bytes from input to output checking
 		 * for the existence of magic number in header, and
@@ -817,7 +817,7 @@ default:
 		}
 
 		if (maxnlpc > 0)
-			qlpc = (int *)pmalloc((ulong) (maxnlpc * sizeof(*qlpc)));
+			qlpc = (int *) pmalloc((maxnlpc * sizeof(*qlpc)));
 
 		if (version > 1)
 			lpcqoffset = V2LPCQOFFSET;

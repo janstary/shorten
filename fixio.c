@@ -67,8 +67,8 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
     nreadbuf = nchan * nitem * datasize;
     if(readbuf != NULL) free(readbuf);
     if(readfub != NULL) free(readfub);
-    readbuf = (char*) pmalloc((ulong) nreadbuf);
-    readfub = (char*) pmalloc((ulong) nreadbuf);
+    readbuf = (char*) pmalloc(nreadbuf);
+    readfub = (char*) pmalloc(nreadbuf);
   }
 
   switch(ftype) {
@@ -241,8 +241,8 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
     nwritebuf = nchan * nitem * datasize;
     if(writebuf != NULL) free(writebuf);
     if(writefub != NULL) free(writefub);
-    writebuf = (char*) pmalloc((ulong) nwritebuf);
-    writefub = (char*) pmalloc((ulong) nwritebuf);
+    writebuf = (char*) pmalloc(nwritebuf);
+    writefub = (char*) pmalloc(nwritebuf);
   }
 
   switch(ftype) {
