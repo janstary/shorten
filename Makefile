@@ -42,11 +42,5 @@ test: shorten
 	if [ `wc -lc tmp.wav | sed 's/ //g'` != "17032640tmp.wav" ]; then exit 1; fi
 	shntest
 
-release: test spotless shorten.man
-	./mkRelease
-
 clean:
-	rm -f $(COBJS) $(BOBJS) $(SOBJS) shorten mkbshift *~
-
-spotless: clean
-	rm -f shorten mkbshift mkbshift.exe tmp.wav *~
+	rm -f $(COBJS) $(BOBJS) $(SOBJS) shorten mkbshift tmp.* *~
