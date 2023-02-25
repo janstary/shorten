@@ -52,7 +52,6 @@
 				 * no compression at all */
 #define VERBATIM_CHUNK_MAX 256	/* max. size of a FN_VERBATIM chunk */
 
-#define ULONGSIZE	2
 #define NSKIPSIZE	1
 #define LPCQSIZE	2
 #define LPCQUANT	5
