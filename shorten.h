@@ -129,7 +129,7 @@ extern void	init_offset	(long**, int, int, int);
 extern int	shorten		(FILE*, FILE*, int, char**);
 
 /**************************/
-/* defined in Sulawalaw.c */
+/* defined in ualaw.c */
 extern int Sulaw2lineartab[];
 #define Sulaw2linear(i) (Sulaw2lineartab[i])
 #ifndef Sulaw2linear
