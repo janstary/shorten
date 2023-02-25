@@ -121,120 +121,92 @@ extern int getc_exit_val;
 #undef	ulong
 #define ulong	unsigned long
 
-#if defined(__STDC__) || defined(__GNUC__) || defined(sgi) || !defined(unix)
-typedef signed char schar;
-#define PROTO(ARGS)	ARGS
-#else
 typedef char schar;
-#define PROTO(ARGS)	()
-#endif
-
-#ifdef NEED_OLD_PROTOTYPES
-/*******************************************/
-/* this should be in string.h or strings.h */
-extern int	strcmp	PROTO ((const char*, const char*));
-extern char*	strcpy	PROTO ((char*, const char*));
-extern char*	strcat	PROTO ((char*, const char*));
-extern int	strlen	PROTO ((const char*));
-
-/**************************************/
-/* defined in stdlib.h if you have it */
-extern void*	malloc	PROTO ((unsigned long));
-extern void	free	PROTO ((void*));
-extern int	atoi	PROTO ((const char*));
-extern void	swab	PROTO ((char*, char*, int));
-extern int	fseek	PROTO ((FILE*, long, int));
-
-/***************************/
-/* other misc system calls */
-extern int	unlink 	PROTO ((const char*));
-extern void	exit	PROTO ((int));
-#endif
 
 /************************/
 /* defined in shorten.c */
-extern void	init_offset	PROTO ((long**, int, int, int));
-extern int	shorten		PROTO ((FILE*, FILE*, int, char**));
+extern void	init_offset	(long**, int, int, int);
+extern int	shorten		(FILE*, FILE*, int, char**);
 
 /**************************/
 /* defined in Sulawalaw.c */
 extern int Sulaw2lineartab[];
 #define Sulaw2linear(i) (Sulaw2lineartab[i])
 #ifndef Sulaw2linear
-extern int	Sulaw2linear PROTO((uchar));
+extern int	Sulaw2linear (uchar);
 #endif
-extern uchar	Slinear2ulaw PROTO((int));
+extern uchar	Slinear2ulaw (int);
 
 extern int Salaw2lineartab[];
 #define Salaw2linear(i) (Salaw2lineartab[i])
 #ifndef Salaw2linear
-extern int	Salaw2linear PROTO((uchar));
+extern int	Salaw2linear (uchar);
 #endif
-extern uchar	Slinear2alaw PROTO((int));
+extern uchar	Slinear2alaw (int);
 
 /**********************/
 /* defined in fixio.c */
-extern void	init_sizeof_sample PROTO ((void));
-extern void	fread_type_init PROTO ((void));
-extern int	fread_type PROTO ((long**, int, int, int, FILE*, long*));
-extern void	fread_type_quit PROTO ((void));
-extern void	fwrite_type_init PROTO ((void));
-extern void	fwrite_type PROTO ((long**, int, int, int, FILE*));
-extern void	fwrite_type_quit PROTO ((void));
-extern int	find_bitshift PROTO ((long*, int, int));
-extern void	fix_bitshift PROTO ((long*, int, int, int));
+extern void	init_sizeof_sample (void);
+extern void	fread_type_init (void);
+extern int	fread_type (long**, int, int, int, FILE*, long*);
+extern void	fread_type_quit (void);
+extern void	fwrite_type_init (void);
+extern void	fwrite_type (long**, int, int, int, FILE*);
+extern void	fwrite_type_quit (void);
+extern int	find_bitshift (long*, int, int);
+extern void	fix_bitshift (long*, int, int, int);
 
 /**********************/
 /* defined in vario.c */
-extern void	var_put_init PROTO ((void));
-extern void	uvar_put PROTO ((ulong, int, FILE*));
-extern void	var_put PROTO ((long, int, FILE*));
-extern void	ulong_put PROTO ((ulong, FILE*));
-extern void	var_put_quit PROTO ((FILE*));
+extern void	var_put_init (void);
+extern void	uvar_put (ulong, int, FILE*);
+extern void	var_put (long, int, FILE*);
+extern void	ulong_put (ulong, FILE*);
+extern void	var_put_quit (FILE*);
 
-extern void	var_get_init PROTO ((void));
-extern long	uvar_get PROTO ((int, FILE*));
-extern long	var_get PROTO ((int, FILE*));
-extern ulong	ulong_get PROTO ((FILE*));
-extern void	var_get_quit PROTO ((void));
+extern void	var_get_init (void);
+extern long	uvar_get (int, FILE*);
+extern long	var_get (int, FILE*);
+extern ulong	ulong_get (FILE*);
+extern void	var_get_quit (void);
 
-extern int	sizeof_uvar PROTO ((ulong, int));
-extern int	sizeof_var PROTO ((long, int));
+extern int	sizeof_uvar (ulong, int);
+extern int	sizeof_var (long, int);
 
-extern void	mkmasktab PROTO ((void));
-extern void	word_put PROTO ((ulong, FILE*));
-extern ulong	word_get PROTO ((FILE*));
+extern void	mkmasktab (void);
+extern void	word_put (ulong, FILE*);
+extern ulong	word_get (FILE*);
 
 /********************/
 /* defined in lpc.c */
-extern int	wav2lpc PROTO ((long*, int, long, int*,int,int,float*,float*));
+extern int	wav2lpc (long*, int, long, int*,int,int,float*,float*);
 
 /*********************/
 /* defined in poly.c */
-extern int	wav2poly PROTO ((long*, int, long, int, float*, float*));
+extern int	wav2poly (long*, int, long, int, float*, float*);
 
 /*********************/
 /* defined in exit.c */
-extern void	basic_exit PROTO ((int));
-extern void	error_exit PROTO ((char*,...));
-extern void	perror_exit PROTO ((char*,...));
-extern void	usage_exit PROTO ((int, char*,...));
-extern void	update_exit PROTO ((int, char*,...));
+extern void	basic_exit (int);
+extern void	error_exit (char*,...);
+extern void	perror_exit (char*,...);
+extern void	usage_exit (int, char*,...);
+extern void	update_exit (int, char*,...);
 
 /**********************/
 /* defined in array.c */
-extern void* 	pmalloc PROTO ((ulong));
-extern long**	long2d PROTO ((ulong, ulong));
+extern void* 	pmalloc (ulong);
+extern long**	long2d (ulong, ulong);
 
 /****************************/
 /* defined in dupfileinfo.c */
-extern int	dupfileinfo PROTO ((char*, char*));
+extern int	dupfileinfo (char*, char*);
 
 /*************************/
 /* defined in riffwave.c */
 
 typedef struct Riff_Wave_Header Riff_Wave_Header;
-Riff_Wave_Header *riff_wave_prochdr PROTO ((FILE *, int *, int *, long *, int *));
-void              write_header PROTO ((Riff_Wave_Header *, FILE *));
-void              free_header PROTO ((Riff_Wave_Header *));
-void              verbatim_file PROTO ((FILE *, FILE *));
+Riff_Wave_Header *riff_wave_prochdr (FILE *, int *, int *, long *, int *);
+void              write_header (Riff_Wave_Header *, FILE *);
+void              free_header (Riff_Wave_Header *);
+void              verbatim_file (FILE *, FILE *);

@@ -29,21 +29,13 @@ int Sulaw2lineartab[] = {-32124, -31100, -30076, -29052, -28028, -27004,
   96, 88, 80, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0};
 
 #ifndef Sulaw2linear
-#ifdef __STDC__
 int Sulaw2linear(unsigned char ulaw) {
-#else
-int Sulaw2linear(ulaw) unsigned char ulaw; {
-#endif
   return(Sulaw2lineartab[ulaw]);
 }
 #endif
 
 /* adapted by ajr for int input */
-#ifdef __STDC__
 unsigned char Slinear2ulaw(int sample) {
-#else
-unsigned char Slinear2ulaw(sample) int sample; {
-#endif
 /*
 ** This routine converts from linear to ulaw.
 **
@@ -139,11 +131,7 @@ int Salaw2lineartab[] = {-5504, -5248, -6016, -5760, -4480, -4224,
   816, 784, 880, 848};
 
 #ifndef Salaw2linear
-#ifdef __STDC__
 int Salaw2linear(unsigned char alaw) {
-#else
-int Salaw2linear(alaw) unsigned char alaw; {
-#endif
   return(Salaw2lineartab[alaw]);
 }
 #endif
@@ -152,11 +140,7 @@ int Salaw2linear(alaw) unsigned char alaw; {
 #define QUANT_MASK      (0xf)           /* Quantization field mask. */
 #define NSEGS           (8)             /* Number of A-law segments. */
 #define SEG_SHIFT       (4)             /* Left shift for segment number. */
-#ifdef __STDC__
 unsigned char Slinear2alaw(int linear) {
-#else
-unsigned char Slinear2alaw(linear) int linear; {
-#endif
   int	seg;
   unsigned char aval, mask;
   static short seg_aend[NSEGS] = {0x1f,0x3f,0x7f,0xff,0x1ff,0x3ff,0x7ff,0xfff};
