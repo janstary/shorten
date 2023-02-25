@@ -1,7 +1,7 @@
 .SUFFIS: .c .o
 BOBJS = mkbshift.o
 COBJS = exit.o array.o Sulawalaw.o
-SOBJS = main.o shorten.o fixio.o vario.o poly.o lpc.o hsgetopt.o dupfinfo.o riffwave.o license.o
+SOBJS = main.o shorten.o fixio.o vario.o poly.o lpc.o dupfinfo.o riffwave.o license.o
 CC    = cc
 CFLAGS= -O
 

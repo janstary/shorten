@@ -172,8 +172,6 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
   long  datalen = -1;
   Riff_Wave_Header *wavhdr = NULL;
   char  *minusstr  = "-";
-  extern char *hs_optarg;
-  extern int   hs_optind;
 
 #ifdef MSDOS
 #ifdef MSDOS_DO_TIMING
@@ -208,24 +206,22 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
   /* this block just processes the command line arguments */
   { int c;
 
-    hs_resetopt();
-
-    while((c = hs_getopt(argc, argv, "a:b:c:d:hlm:n:p:q:r:t:uv:x")) != -1)
+    while((c = getopt(argc, argv, "a:b:c:d:hlm:n:p:q:r:t:uv:x")) != -1)
       switch(c) {
       case 'a':
-	if((nskip = atoi(hs_optarg)) < 0)
+	if((nskip = atoi(optarg)) < 0)
 	  usage_exit(1, "number of bytes to copy must be positive\n");
 	break;
       case 'b':
-	if((blocksize = atoi(hs_optarg)) <= 0)
+	if((blocksize = atoi(optarg)) <= 0)
 	  usage_exit(1, "block size must be greater than zero\n");
 	break;
       case 'c':
-	if((nchan = atoi(hs_optarg)) <= 0)
+	if((nchan = atoi(optarg)) <= 0)
 	  usage_exit(1, "number of channels must be greater than zero\n");
 	break;
       case 'd':
-	if((ndiscard = atoi(hs_optarg)) < 0)
+	if((ndiscard = atoi(optarg)) < 0)
 	  usage_exit(1, "number of bytes to discard must be positive\n");
 	break;
       case 'h':
@@ -294,47 +290,47 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
 	basic_exit(0);
 	break;
       case 'm':
-	if((nmean = atoi(hs_optarg)) < 0)
+	if((nmean = atoi(optarg)) < 0)
 	  usage_exit(1, "number of blocks for mean estimation must be positive\n");
 	break;
       case 'n':
-	if((minsnr = atoi(hs_optarg)) < 0)
+	if((minsnr = atoi(optarg)) < 0)
 	  usage_exit(1, "Useful signal to noise ratios are positive\n");
 	break;
       case 'p':
-	maxnlpc = atoi(hs_optarg);
+	maxnlpc = atoi(optarg);
 	if(maxnlpc < 0 || maxnlpc > MAX_LPC_ORDER)
 	  usage_exit(1, "linear prediction order must be in the range 0 ... %d\n", MAX_LPC_ORDER);
 	break;
       case 'q':
-	if((quanterror = atoi(hs_optarg)) < 0)
+	if((quanterror = atoi(optarg)) < 0)
 	  usage_exit(1, "quantisation level must be positive\n");
 	break;
       case 'r':
-	maxresnstr = hs_optarg;
+	maxresnstr = optarg;
 	break;
       case 't':
-	if     (!strcmp(hs_optarg, "au"))   ftype = TYPE_GENERIC_ULAW;
-	else if(!strcmp(hs_optarg, "ulaw")) ftype = TYPE_GENERIC_ULAW;
-	else if(!strcmp(hs_optarg, "alaw")) ftype = TYPE_GENERIC_ALAW;
-	else if(!strcmp(hs_optarg, "s8"))   ftype = TYPE_S8;
-	else if(!strcmp(hs_optarg, "u8"))   ftype = TYPE_U8;
-	else if(!strcmp(hs_optarg, "s16"))  ftype = hilo?TYPE_S16HL:TYPE_S16LH;
-	else if(!strcmp(hs_optarg, "u16"))  ftype = hilo?TYPE_U16HL:TYPE_U16LH;
-	else if(!strcmp(hs_optarg, "s16x")) ftype = hilo?TYPE_S16LH:TYPE_S16HL;
-	else if(!strcmp(hs_optarg, "u16x")) ftype = hilo?TYPE_U16LH:TYPE_U16HL;
-	else if(!strcmp(hs_optarg, "s16hl"))ftype = TYPE_S16HL;
-	else if(!strcmp(hs_optarg, "u16hl"))ftype = TYPE_U16HL;
-	else if(!strcmp(hs_optarg, "s16lh"))ftype = TYPE_S16LH;
-	else if(!strcmp(hs_optarg, "u16lh"))ftype = TYPE_U16LH;
-	else if(!strcmp(hs_optarg, "wav"))  ftype = TYPE_RIFF_WAVE;
-	else usage_exit(1, "unknown file type: %s\n", hs_optarg);
+	if     (!strcmp(optarg, "au"))   ftype = TYPE_GENERIC_ULAW;
+	else if(!strcmp(optarg, "ulaw")) ftype = TYPE_GENERIC_ULAW;
+	else if(!strcmp(optarg, "alaw")) ftype = TYPE_GENERIC_ALAW;
+	else if(!strcmp(optarg, "s8"))   ftype = TYPE_S8;
+	else if(!strcmp(optarg, "u8"))   ftype = TYPE_U8;
+	else if(!strcmp(optarg, "s16"))  ftype = hilo?TYPE_S16HL:TYPE_S16LH;
+	else if(!strcmp(optarg, "u16"))  ftype = hilo?TYPE_U16HL:TYPE_U16LH;
+	else if(!strcmp(optarg, "s16x")) ftype = hilo?TYPE_S16LH:TYPE_S16HL;
+	else if(!strcmp(optarg, "u16x")) ftype = hilo?TYPE_U16LH:TYPE_U16HL;
+	else if(!strcmp(optarg, "s16hl"))ftype = TYPE_S16HL;
+	else if(!strcmp(optarg, "u16hl"))ftype = TYPE_U16HL;
+	else if(!strcmp(optarg, "s16lh"))ftype = TYPE_S16LH;
+	else if(!strcmp(optarg, "u16lh"))ftype = TYPE_U16LH;
+	else if(!strcmp(optarg, "wav"))  ftype = TYPE_RIFF_WAVE;
+	else usage_exit(1, "unknown file type: %s\n", optarg);
 	break;
       case 'u':
 	ulawZeroMerge = 1;
 	break;
       case 'v':
-	version = atoi(hs_optarg);
+	version = atoi(optarg);
 	if(version < 0 || version > MAX_SUPPORTED_VERSION)
 	  usage_exit(1, "currently supported versions are in the range %d ... %d\n",
 		     MIN_SUPPORTED_VERSION, MAX_SUPPORTED_VERSION);
@@ -366,7 +362,7 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
     usage_exit(1, "the -u flag is only applicable to ulaw coding\n");
 
   /* this chunk just sets up the input and output files */
-  nfilename = argc - hs_optind;
+  nfilename = argc - optind;
   switch(nfilename) {
   case 0:
 #ifndef MSDOS

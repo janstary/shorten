@@ -221,13 +221,6 @@ extern void	perror_exit PROTO ((char*,...));
 extern void	usage_exit PROTO ((int, char*,...));
 extern void	update_exit PROTO ((int, char*,...));
 
-/*************************/
-/* defined in hsgetopt.c */
-extern void	hs_resetopt PROTO ((void));
-extern int	hs_getopt PROTO ((int, char**, char*));
-extern int	hs_optind;
-extern char* 	hs_optarg;
-
 /**********************/
 /* defined in array.c */
 extern void* 	pmalloc PROTO ((ulong));
