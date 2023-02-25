@@ -1,54 +1,55 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
-if [ $HOME != c:/ ]; then
-  PATH=.:$PATH
-else
-  PATH=".;/bin"
-fi
+BIN=./shorten
+SHN=example.shn
+WAV=example.wav
 
-shorten -x mvs_wav.shn tmp.wav
-shorten -v 2 -t wav	tmp.wav - | cmp - mvs_wav.shn
-shorten -a2 -t s16	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -a1024 -t s16x 	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -b1024 -t u16	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -b 4   -t u16x	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -m 0   -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -m 32  -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -v 0   -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -v 1   -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -v 2   -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -p1    -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -p16   -t s16hl	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -p16 -v2 -ts16hl tmp.wav -| shorten -x | cmp - tmp.wav
-shorten -tulaw		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -talaw		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -ts8		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -tu8		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -ts16		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -tu16		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -tu16x		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -ts16hl		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -tu16hl		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -ts16lh		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -tu16lh		tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -c2 -tulaw	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -c2 -talaw	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -a340 -c16	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -c2 -p4 -tu16 -b5 tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -v2 -t ulaw 	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -v2 -t alaw 	tmp.wav - | shorten -x | cmp - tmp.wav
-shorten -q3 tmp.wav tmp_q3.shn
-shorten -x tmp_q3.shn - | shorten     | cmp - tmp_q3.shn
-shorten -x tmp_q3.shn - | shorten -q3 | cmp - tmp_q3.shn
-rm tmp_q3.shn
-shorten -r3 tmp.wav tmp_r3.shn
-rm tmp_r3.shn
+[ -x ${BIN} ] || { echo ${BIN} not found ; exit 1 ; }
+[ -r ${SHN} ] || { echo ${SHN} unreadable ; exit 1 ; }
 
-if [ $HOME != c:/ ]; then
-  shorten tmp.wav
-  shorten -x tmp.wav.shn
-fi
+$BIN -x $SHN $WAV && $BIN -v 2 -t wav $WAV - | cmp - $SHN
 
-rm tmp.wav
+for options in \
+	"-a2      -t s16"	\
+	"-b1024   -t u16"	\
+	"-a1024   -t s16x"	\
+	"-b 4     -t u16x"	\
+	"-m 0     -t s16hl"	\
+	"-m 32    -t s16hl"	\
+	"-v 0     -t s16hl"	\
+	"-v 1     -t s16hl"	\
+	"-v 2     -t s16hl"	\
+	"-p1      -t s16hl"	\
+	"-p16     -t s16hl"	\
+	"-p16 -v2 -t s16hl"	\
+	"-tulaw"		\
+	"-talaw"		\
+	"-ts8"			\
+	"-tu8"			\
+	"-ts16"			\
+	"-tu16"			\
+	"-tu16x"		\
+	"-ts16hl"		\
+	"-tu16hl"		\
+	"-ts16lh"		\
+	"-tu16lh"		\
+	"-c2 -tulaw"		\
+	"-c2 -talaw"		\
+	"-a340 -c16"		\
+	"-c2 -p4 -tu16 -b5"	\
+	"-v2 -t ulaw"		\
+	"-v2 -t alaw"		\
+; do
+	$BIN $options $WAV - | $BIN -x | cmp - $WAV
+done
 
-exit 0
+for q in 1 2 3 ; do
+	TMP="/tmp/$WAV-q$q.shn"
+	$BIN -q $q $WAV $TMP
+	$BIN -x $TMP - | $BIN       | cmp - $TMP
+	$BIN -x $TMP - | $BIN -q $q | cmp - $TMP
+done
+
+$BIN -r3 $WAV $TMP
+
+rm -f $WAV $TMP

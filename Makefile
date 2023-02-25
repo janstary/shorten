@@ -22,9 +22,6 @@ all: ${BIN}
 ${BIN}: ${OBJS} bitshift.h
 	${CC} ${CFLAGS} -o ${BIN} ${OBJS}
 
-#shorten: bitshift.h $(COBJS) $(SOBJS)
-#$(CC) $(CFLAGS) -o shorten $(COBJS) $(SOBJS) -lm
-
 lint: ${MAN}
 	mandoc -Tlint ${MAN}
 
@@ -38,8 +35,6 @@ mkbshift: mkbshift.c exit.o array.o ualaw.o
 	$(CC) $(CFLAGS) -o mkbshift mkbshift.c exit.o array.o ualaw.o -lm
 
 test: shorten
-	./shorten -x mvs_wav.shn tmp.wav
-	if [ `wc -lc tmp.wav | sed 's/ //g'` != "17032640tmp.wav" ]; then exit 1; fi
 	./shntest
 
 install: ${BIN} ${MAN}
