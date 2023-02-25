@@ -26,7 +26,7 @@ bitshift.h: mkbshift
 	./mkbshift
 
 mkbshift: mkbshift.c exit.o array.o ualaw.o
-	$(CC) $(CFLAGS) -o mkbshift mkbshift.c exit.o array.o ualaw.o -lm
+	$(CC) $(CFLAGS) -o mkbshift mkbshift.c exit.o array.o ualaw.o
 
 %.o: %.c shorten.h
 	${CC} ${CFLAGS} -c $<
