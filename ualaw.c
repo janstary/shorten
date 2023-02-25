@@ -1,7 +1,5 @@
-# include <stdio.h>
 # include <stdlib.h>
-# include <stddef.h>
-# include <math.h>
+# include <stdio.h>
 
 int Sulaw2lineartab[] = {-32124, -31100, -30076, -29052, -28028, -27004,
   -25980, -24956, -23932, -22908, -21884, -20860, -19836, -18812,
