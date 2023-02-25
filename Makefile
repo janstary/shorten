@@ -1,7 +1,7 @@
 .SUFFIS: .c .o
 BOBJS = mkbshift.o
 COBJS = exit.o array.o Sulawalaw.o
-SOBJS = main.o shorten.o fixio.o vario.o poly.o lpc.o dupfinfo.o riffwave.o license.o
+SOBJS = shorten.o fixio.o vario.o poly.o lpc.o dupfinfo.o riffwave.o license.o
 CC    = cc
 CFLAGS= -O
 
@@ -46,7 +46,7 @@ release: test spotless shorten.man
 	./mkRelease
 
 clean:
-	rm -f $(COBJS) $(BOBJS) $(SOBJS) *~
+	rm -f $(COBJS) $(BOBJS) $(SOBJS) shorten mkbshift *~
 
 spotless: clean
 	rm -f shorten mkbshift mkbshift.exe tmp.wav *~

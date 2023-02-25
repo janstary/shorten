@@ -1078,3 +1078,7 @@ int shorten(stdi, stdo, argc, argv) FILE *stdi, *stdo; int argc; char **argv; {
   /* quit happy */
   return(0);
 }
+
+int main(argc, argv) int argc; char **argv; {
+  return(shorten(stdin, stdout, argc, argv));
+}
