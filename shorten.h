@@ -85,10 +85,6 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
 
-#if defined(unix) && !defined(linux)
-#define labs abs
-#endif
-
 #define ROUNDEDSHIFTDOWN(x, n) (((n) == 0) ? (x) : ((x) >> ((n) - 1)) >> 1)
 
 /* BUFSIZ must be a multiple of four to contain a whole number of words */
