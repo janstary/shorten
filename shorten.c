@@ -436,8 +436,8 @@ default:
 		putc_exit(version, fileo);
 
 		/* grab some space for the input buffers */
-		buffer = long2d((ulong) nchan, (ulong) (blocksize + nwrap));
-		offset = long2d((ulong) nchan, (ulong) MAX(1, nmean));
+		buffer = long2d(nchan, blocksize + nwrap);
+		offset = long2d(nchan, MAX(1, nmean));
 
 		maxresn = parseList(maxresnstr, nchan);
 		for (chan = 0; chan < nchan; chan++)
@@ -797,8 +797,8 @@ default:
 		nwrap = MAX(NWRAP, maxnlpc);
 
 		/* grab some space for the input buffer */
-		buffer = long2d((ulong) nchan, (ulong) (blocksize + nwrap));
-		offset = long2d((ulong) nchan, (ulong) MAX(1, nmean));
+		buffer = long2d(nchan, blocksize + nwrap);
+		offset = long2d(nchan, MAX(1, nmean));
 
 		for (chan = 0; chan < nchan; chan++) {
 			for (i = 0; i < nwrap; i++)

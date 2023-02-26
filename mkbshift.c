@@ -25,8 +25,8 @@ int main() {
   int shift, i;
   int tab[USIZE];
   long sample;
-  long **forwardmap = long2d((ulong) SHIFTSIZE, (ulong) USIZE);
-  long **reversemap = long2d((ulong) SHIFTSIZE, (ulong) USIZE);
+  long **forwardmap = long2d(SHIFTSIZE, USIZE);
+  long **reversemap = long2d(SHIFTSIZE, USIZE);
 
   if ((fout = fopen(filename, writemode)) == NULL)
     err(1, "%s", filename);
