@@ -6,10 +6,11 @@
 *                                                                             *
 ******************************************************************************/
 
-# include <stdlib.h>
-# include <string.h>
-# include <stdio.h>
-# include <err.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <err.h>
 
 # include "shorten.h"
 # include "bitshift.h"
