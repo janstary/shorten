@@ -91,14 +91,6 @@
 
 #define ROUNDEDSHIFTDOWN(x, n) (((n) == 0) ? (x) : ((x) >> ((n) - 1)) >> 1)
 
-#ifndef M_LN2
-#define	M_LN2	0.69314718055994530942
-#endif
-
-#ifndef M_PI
-#define M_PI	3.14159265358979323846
-#endif
-
 /* BUFSIZ must be a multiple of four to contain a whole number of words */
 #ifndef BUFSIZ
 #define BUFSIZ 1024
