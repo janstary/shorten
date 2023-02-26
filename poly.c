@@ -1,10 +1,7 @@
-/******************************************************************************
-*                                                                             *
-*       Copyright (C) 1992-1995 Tony Robinson                                 *
-*                                                                             *
-*       See the file LICENSE for conditions on distribution and usage         *
-*                                                                             *
-******************************************************************************/
+/*
+ * Copyright (C) 1992-1995 Tony Robinson
+ * Copyright (C) 2023      Jan Starý
+ */
 
 # include <math.h>
 # include <stdio.h>

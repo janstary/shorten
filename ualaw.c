@@ -1,3 +1,11 @@
+
+/*
+ * Copyright (C) 1989 Craig Reese
+ * Copyright (C) 1989 Joe Campbell
+ * Copyright (C) 1995 Tony Robinson
+ * Copyright (C) 2023 Jan Starý
+ */
+
 # include <stdlib.h>
 # include <stdio.h>
 

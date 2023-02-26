@@ -1,10 +1,7 @@
-/******************************************************************************
-*                                                                             *
-*       Copyright (C) 1992-1997 Tony Robinson and SoftSound Limited           *
-*                                                                             *
-*       See the file LICENSE for conditions on distribution and usage         *
-*                                                                             *
-******************************************************************************/
+/*
+ * Copyright (C) 1992-1997 Tony Robinson
+ * Copyright (C) 2023      Jan Starý
+ */
 
 #include <sys/stat.h>
 #include <stdlib.h>
