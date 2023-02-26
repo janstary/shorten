@@ -21,7 +21,6 @@ char *readmode = "r";
 char *writemode = "w";
 #define FILESUFFIX ".shn"
 
-char *argv0 = "shorten";
 int getc_exit_val;
 char *filenameo = NULL;
 FILE *fileo = NULL;

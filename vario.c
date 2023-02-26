@@ -12,8 +12,6 @@
 
 # include "shorten.h"
 
-extern char *argv0;
-
 # define MASKTABSIZE 33
 ulong masktab[MASKTABSIZE];
 

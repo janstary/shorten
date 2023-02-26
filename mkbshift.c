@@ -15,7 +15,6 @@
 # define HUSIZE 128
 # define SHIFTSIZE 13
 
-char	*argv0 = "mkbshift";
 char	*filenameo = NULL;
 FILE	*fileo = NULL;
 
