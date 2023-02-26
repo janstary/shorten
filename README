@@ -1,0 +1,16 @@
+This is a fork of Tony Robinson's shorten,
+stemming from version 2.3a, the last one by him.
+
+(There was a previous effort by Jason Jordan,
+see http://shnutils.freeshell.org/shorten/ for 3.6.1)
+
+Decidedly, we use the last official version which is simpler,
+has no aiff support and no seek tables and is not cluttered
+with the GNU autotools. The initial commit is 2.3a verbatim.
+
+As most of Dr. Robinson's code predates the C99 standard,
+there are obvious updates to be made: every system has
+stdint.h and abs(3), we don't need to have a homegrown
+getopt(3) or do what err(3) does nowadays. There is barely
+any functional change, the compression and decompression
+works as in 2.3a and still passes the original tests.
