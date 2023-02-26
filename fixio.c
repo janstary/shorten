@@ -25,10 +25,10 @@ void init_sizeof_sample() {
   sizeof_sample[TYPE_AU1]   = sizeof(uchar);
   sizeof_sample[TYPE_S8]    = sizeof(char);
   sizeof_sample[TYPE_U8]    = sizeof(uchar);
-  sizeof_sample[TYPE_S16HL] = sizeof(short);
-  sizeof_sample[TYPE_U16HL] = sizeof(short);
-  sizeof_sample[TYPE_S16LH] = sizeof(short);
-  sizeof_sample[TYPE_U16LH] = sizeof(short);
+  sizeof_sample[TYPE_S16HL] = sizeof(int16_t);
+  sizeof_sample[TYPE_U16HL] = sizeof(int16_t);
+  sizeof_sample[TYPE_S16LH] = sizeof(int16_t);
+  sizeof_sample[TYPE_U16LH] = sizeof(int16_t);
   sizeof_sample[TYPE_ULAW]  = sizeof(uchar);
   sizeof_sample[TYPE_AU2]   = sizeof(uchar);
   sizeof_sample[TYPE_AU3]   = sizeof(uchar);
@@ -141,7 +141,7 @@ int fread_type(data, ftype, nchan, nitem, stream, datalen) long **data;
   }
   case TYPE_S16HL:
   case TYPE_S16LH: {
-    short *readbufp = (short*) readbuf;
+    int16_t *readbufp = (int16_t*) readbuf;
     if(nchan == 1)
       for(i = 0; i < nread; i++)
 	data0[i] = *readbufp++;
@@ -284,7 +284,7 @@ void fwrite_type(data, ftype, nchan, nitem, stream) long **data; int ftype,
   }
   case TYPE_S16HL:
   case TYPE_S16LH: {
-    short *writebufp = (short*) writebuf;
+    int16_t *writebufp = (int16_t*) writebuf;
     if(nchan == 1)
       for(i = 0; i < nitem; i++)
 	*writebufp++ = CAPS16(data0[i]);

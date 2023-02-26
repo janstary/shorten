@@ -141,7 +141,7 @@ int Salaw2linear(unsigned char alaw) {
 unsigned char Slinear2alaw(int linear) {
   int	seg;
   unsigned char aval, mask;
-  static short seg_aend[NSEGS] = {0x1f,0x3f,0x7f,0xff,0x1ff,0x3ff,0x7ff,0xfff};
+  static int16_t seg_aend[NSEGS]={0x1f,0x3f,0x7f,0xff,0x1ff,0x3ff,0x7ff,0xfff};
 
   linear = linear >> 3;
 
