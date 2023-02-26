@@ -19,7 +19,7 @@ OBJS	=		\
 all: ${BIN}
 
 ${BIN}: ${OBJS} bitshift.h
-	${CC} ${CFLAGS} -o ${BIN} ${OBJS}
+	${CC} ${CFLAGS} -o ${BIN} ${OBJS} -lm
 
 bitshift.h: mkbshift
 	./mkbshift
