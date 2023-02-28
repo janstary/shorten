@@ -16,11 +16,13 @@
 
 char *readmode = "r";
 char *writemode = "w";
-#define FILESUFFIX ".shn"
+
+#define SUFFIX ".shn"
+#define SUFLEN (strlen(SUFFIX))
 
 int getc_exit_val;
-char *filenameo = NULL;
-FILE *fileo = NULL;
+char *oname = NULL;
+FILE *ofile = NULL;
 
 #define V2LPCQOFFSET (1 << LPCQUANT);
 
@@ -84,33 +86,24 @@ Satof(char *string)
 }
 
 float *
-parseList(maxresnstr, nchan)
-	char *maxresnstr;
-	int nchan;
+parseList(char *maxresnstr, int nchan)
 {
 	int nval;
 	char *str, *floatstr;
 	float *floatval;
 
-	/* copy maxresnstr to temporary space, str */
-	str = malloc(strlen(maxresnstr) + 1);
-	strcpy(str, maxresnstr);
-
-	/* grab space for the floating point parses */
+	str = strdup(maxresnstr);
 	floatval = pmalloc(nchan * sizeof(*floatval));
-
-	/* loop for all floats in the arguement */
 	floatstr = strtok(str, ",");
 	floatval[0] = Satof(floatstr);
 
-	for (nval = 1; (floatstr = strtok(NULL, ",")) != NULL && nval < nchan; nval++)
+	for (nval = 1; (floatstr = strtok(NULL, ",")) && nval < nchan; nval++)
 		floatval[nval] = Satof(floatstr);
 
 	for (; nval < nchan; nval++)
 		floatval[nval] = floatval[nval - 1];
 
 	free(str);
-
 	return (floatval);
 }
 
@@ -147,10 +140,9 @@ shorten(stdi, stdo, argc, argv)
 	int version = FORMAT_VERSION, extract = 0, lastbitshift = 0, bitshift = 0;
 	int hiloint = 1, hilo = !(*((char *)&hiloint));
 	int ftype = TYPE_EOF;
-	char *magic = MAGIC, *filenamei = NULL;
-	char *tmpfilename = NULL;
+	char *magic = MAGIC, *iname = NULL;
 	char *maxresnstr = DEFAULT_MAXRESNSTR;
-	FILE *filei;
+	FILE *ifile;
 	int blocksize = DEFAULT_BLOCK_SIZE, nchan = DEFAULT_NCHAN;
 	int i, chan, nwrap, nskip = DEFAULT_NSKIP, ndiscard = DEFAULT_NDISCARD;
 	int *qlpc = NULL, maxnlpc = DEFAULT_MAXNLPC, nmean = UNDEFINED_UINT;
@@ -158,7 +150,6 @@ shorten(stdi, stdo, argc, argv)
 	int ulawZeroMerge = 0;
 	long datalen = -1;
 	Riff_Wave_Header *wavhdr = NULL;
-	char *minusstr = "-";
 
 	/* this block just processes the command line arguments */
 	{
@@ -269,51 +260,44 @@ default:
 	nfilename = argc - optind;
 	switch (nfilename) {
 	case 0:
-		filenamei = minusstr;
-		filenameo = minusstr;
+		iname = strdup("-");
+		oname = strdup("-");
 		break;
-	case 1:{
-			int oldfilelen, suffixlen, maxlen;
-
-			filenamei = argv[argc - 1];
-			oldfilelen = strlen(filenamei);
-			suffixlen = strlen(FILESUFFIX);
-			maxlen = oldfilelen + suffixlen;
-			tmpfilename = pmalloc(maxlen + 1);
-			strcpy(tmpfilename, filenamei);
-
-			if (extract) {
-				int newfilelen = oldfilelen - suffixlen;
-				if (strcmp(filenamei + newfilelen, FILESUFFIX))
-					errx(1, "file name does not end in %s: %s\n", FILESUFFIX,
-						   filenamei);
-				tmpfilename[newfilelen] = '\0';
-			} else
-				strcat(tmpfilename, FILESUFFIX);
-
-			filenameo = tmpfilename;
-			break;
+	case 1:
+		iname = argv[argc - 1];
+		if (extract) {
+			char *dot;
+			oname = strdup(iname);
+			if (((dot = strrchr(oname, '.')) == NULL)
+			|| strncmp(dot+1, SUFFIX, SUFLEN))
+				errx(1,"no %s in %s", SUFFIX, iname);
+			*dot = '\0';
+		} else {
+			oname = calloc(1, FILENAME_MAX);
+			strlcpy(oname, iname, FILENAME_MAX);
+			strlcat(oname, SUFFIX, FILENAME_MAX);
 		}
+		break;
 	case 2:
-		filenamei = argv[argc - 2];
-		filenameo = argv[argc - 1];
+		iname = argv[argc - 2];
+		oname = argv[argc - 1];
 		break;
 	default:
 		errx(1, NULL);
 	}
 
-	if (strcmp(filenamei, minusstr)) {
-		if ((filei = fopen(filenamei, readmode)) == NULL)
-			err(1, "%s", filenamei);
+	if (strncmp(iname, "-", 1)) {
+		if ((ifile = fopen(iname, readmode)) == NULL)
+			err(1, "%s", iname);
 	} else {
-		filei = stdi;
+		ifile = stdi;
 	}
 
-	if (strcmp(filenameo, minusstr)) {
-		if ((fileo = fopen(filenameo, writemode)) == NULL)
-			err(1, "%s", filenameo);
+	if (strncmp(oname, "-", 1)) {
+		if ((ofile = fopen(oname, writemode)) == NULL)
+			err(1, "%s", oname);
 	} else {
-		fileo = stdo;
+		ofile = stdo;
 	}
 
 	/* discard header on input file - can't rely on fseek() here */
@@ -321,11 +305,11 @@ default:
 		char discardbuf[BUFSIZ];
 
 		for (i = 0; i < ndiscard / BUFSIZ; i++)
-			if (fread(discardbuf, BUFSIZ, 1, filei) != 1)
+			if (fread(discardbuf, BUFSIZ, 1, ifile) != 1)
 				errx(1, "EOF on input when discarding header\n");
 
 		if (ndiscard % BUFSIZ != 0)
-			if (fread(discardbuf, ndiscard % BUFSIZ, 1, filei) != 1)
+			if (fread(discardbuf, ndiscard % BUFSIZ, 1, ifile) != 1)
 				errx(1, "EOF on input when discarding header\n");
 	}
 	if (!extract) {
@@ -345,7 +329,7 @@ default:
 		 * count. */
 		if (ftype == TYPE_RIFF_WAVE) {
 			int wtype;
-			wavhdr = riff_wave_prochdr(filei, &ftype, &nchan, &datalen, &wtype);
+			wavhdr = riff_wave_prochdr(ifile, &ftype, &nchan, &datalen, &wtype);
 			if (wavhdr == NULL) {
 				if (wtype == 0)
 					/* the header must have been invalid */
@@ -399,19 +383,19 @@ default:
 		 * defaulting to internal storage if that happens */
 		if (version >= 2) {
 			while (nskip - nscan > 0 && vbyte > MAX_VERSION) {
-				int byte = getc_exit(filei);
+				int byte = getc_exit(ifile);
 				if (magic[nscan] != '\0' && byte == magic[nscan])
 					nscan++;
 				else if (magic[nscan] == '\0' && byte <= MAX_VERSION)
 					vbyte = byte;
 				else {
 					for (i = 0; i < nscan; i++)
-						putc_exit(magic[i], fileo);
+						putc_exit(magic[i], ofile);
 					if (byte == magic[0]) {
 						nskip -= nscan;
 						nscan = 1;
 					} else {
-						putc_exit(byte, fileo);
+						putc_exit(byte, ofile);
 						nskip -= nscan + 1;
 						nscan = 0;
 					}
@@ -419,17 +403,17 @@ default:
 			}
 			if (vbyte > MAX_VERSION) {
 				for (i = 0; i < nscan; i++)
-					putc_exit(magic[i], fileo);
+					putc_exit(magic[i], ofile);
 				nskip -= nscan;
 				nscan = 0;
 			}
 		}
 		/* write magic number */
-		if (fwrite(magic, strlen(magic), 1, fileo) != 1)
+		if (fwrite(magic, strlen(magic), 1, ofile) != 1)
 			errx(1, "could not write the magic number\n");
 
 		/* write version number */
-		putc_exit(version, fileo);
+		putc_exit(version, ofile);
 
 		/* grab some space for the input buffers */
 		buffer = long2d(nchan, blocksize + nwrap);
@@ -458,36 +442,36 @@ default:
 		var_put_init();
 
 		/* put file type and number of channels */
-		UINT_PUT(ftype, TYPESIZE, fileo);
-		UINT_PUT(nchan, CHANSIZE, fileo);
+		UINT_PUT(ftype, TYPESIZE, ofile);
+		UINT_PUT(nchan, CHANSIZE, ofile);
 
 		/* put blocksize if version > 0 */
 		if (version == 0) {
 			if (blocksize != DEFAULT_BLOCK_SIZE) {
-				uvar_put((ulong) FN_BLOCKSIZE, FNSIZE, fileo);
+				uvar_put((ulong) FN_BLOCKSIZE, FNSIZE, ofile);
 				UINT_PUT(blocksize, (int)(log((double)DEFAULT_BLOCK_SIZE) / M_LN2),
-					 fileo);
+					 ofile);
 			}
 		} else {
 			UINT_PUT(blocksize, (int)(log((double)DEFAULT_BLOCK_SIZE) / M_LN2),
-				 fileo);
-			UINT_PUT(maxnlpc, LPCQSIZE, fileo);
-			UINT_PUT(nmean, 0, fileo);
-			UINT_PUT(nskip, NSKIPSIZE, fileo);
+				 ofile);
+			UINT_PUT(maxnlpc, LPCQSIZE, ofile);
+			UINT_PUT(nmean, 0, ofile);
+			UINT_PUT(nskip, NSKIPSIZE, ofile);
 			if (version == 1) {
 				for (i = 0; i < nskip; i++) {
-					int byte = getc_exit(filei);
-					uvar_put((ulong) byte, XBYTESIZE, fileo);
+					int byte = getc_exit(ifile);
+					uvar_put((ulong) byte, XBYTESIZE, ofile);
 				}
 			} else {
 				if (vbyte <= MAX_VERSION) {
 					for (i = 0; i < nscan; i++)
-						uvar_put((ulong) magic[i], XBYTESIZE, fileo);
-					uvar_put((ulong) vbyte, XBYTESIZE, fileo);
+						uvar_put((ulong) magic[i], XBYTESIZE, ofile);
+					uvar_put((ulong) vbyte, XBYTESIZE, ofile);
 				}
 				for (i = 0; i < nskip - nscan - 1; i++) {
-					int byte = getc_exit(filei);
-					uvar_put((ulong) byte, XBYTESIZE, fileo);
+					int byte = getc_exit(ifile);
+					uvar_put((ulong) byte, XBYTESIZE, ofile);
 				}
 				lpcqoffset = V2LPCQOFFSET;
 			}
@@ -496,18 +480,18 @@ default:
 		/* if we had a RIFF WAVE header, write it out in the form of
 		 * verbatim chunks at this point */
 		if (wavhdr)
-			write_header(wavhdr, fileo);
+			write_header(wavhdr, ofile);
 
 		init_offset(offset, nchan, MAX(1, nmean), ftype);
 
 		/* this is the main read/code/write loop for the whole file */
 		while ((nread = fread_type(buffer, ftype, nchan,
-					blocksize, filei, &datalen)) != 0) {
+					blocksize, ifile, &datalen)) != 0) {
 
 			/* put blocksize if changed */
 			if (nread != blocksize) {
-				uvar_put((ulong) FN_BLOCKSIZE, FNSIZE, fileo);
-				UINT_PUT(nread, (int)(log((double)blocksize) / M_LN2), fileo);
+				uvar_put((ulong) FN_BLOCKSIZE, FNSIZE, ofile);
+				UINT_PUT(nread, (int)(log((double)blocksize) / M_LN2), ofile);
 				blocksize = nread;
 			}
 			/* loop over all channels, processing each channel in
@@ -618,42 +602,42 @@ default:
 						offset[chan][nmean - 1] = (sum / blocksize) << bitshift;
 				}
 				if (bitshift != lastbitshift) {
-					uvar_put((ulong) FN_BITSHIFT, FNSIZE, fileo);
-					uvar_put((ulong) bitshift, BITSHIFTSIZE, fileo);
+					uvar_put((ulong) FN_BITSHIFT, FNSIZE, ofile);
+					uvar_put((ulong) bitshift, BITSHIFTSIZE, ofile);
 					lastbitshift = bitshift;
 				}
 				if (fnd == FN_ZERO) {
-					uvar_put((ulong) fnd, FNSIZE, fileo);
+					uvar_put((ulong) fnd, FNSIZE, ofile);
 				} else if (maxnlpc == 0) {
-					uvar_put((ulong) fnd, FNSIZE, fileo);
-					uvar_put((ulong) resn, ENERGYSIZE, fileo);
+					uvar_put((ulong) fnd, FNSIZE, ofile);
+					uvar_put((ulong) resn, ENERGYSIZE, ofile);
 
 					switch (fnd) {
 					case FN_DIFF0:
 						for (i = 0; i < blocksize; i++)
-							VAR_PUT(cbuffer[i] - coffset, resn, fileo);
+							VAR_PUT(cbuffer[i] - coffset, resn, ofile);
 						break;
 					case FN_DIFF1:
 						for (i = 0; i < blocksize; i++)
-							VAR_PUT(cbuffer[i] - cbuffer[i - 1], resn, fileo);
+							VAR_PUT(cbuffer[i] - cbuffer[i - 1], resn, ofile);
 						break;
 					case FN_DIFF2:
 						for (i = 0; i < blocksize; i++)
 							VAR_PUT(cbuffer[i] - 2 * cbuffer[i - 1] + cbuffer[i - 2],
-								resn, fileo);
+								resn, ofile);
 						break;
 					case FN_DIFF3:
 						for (i = 0; i < blocksize; i++)
 							VAR_PUT(cbuffer[i] - 3 * (cbuffer[i - 1] - cbuffer[i - 2]) -
-								cbuffer[i - 3], resn, fileo);
+								cbuffer[i - 3], resn, ofile);
 						break;
 					}
 				} else {
-					uvar_put((ulong) FN_QLPC, FNSIZE, fileo);
-					uvar_put((ulong) resn, ENERGYSIZE, fileo);
-					uvar_put((ulong) nlpc, LPCQSIZE, fileo);
+					uvar_put((ulong) FN_QLPC, FNSIZE, ofile);
+					uvar_put((ulong) resn, ENERGYSIZE, ofile);
+					uvar_put((ulong) nlpc, LPCQSIZE, ofile);
 					for (i = 0; i < nlpc; i++)
-						var_put((long)qlpc[i], LPCQUANT, fileo);
+						var_put((long)qlpc[i], LPCQUANT, ofile);
 
 					/* deduct mean from everything */
 					for (i = -nlpc; i < blocksize; i++)
@@ -668,7 +652,7 @@ default:
 
 						for (j = 0; j < nlpc; j++)
 							sum += qlpc[j] * obuffer[-j];
-						var_put(cbuffer[i] - (sum >> LPCQUANT), resn, fileo);
+						var_put(cbuffer[i] - (sum >> LPCQUANT), resn, ofile);
 					}
 
 					/* add mean back to those samples
@@ -686,12 +670,12 @@ default:
 		/* if we had a RIFF WAVE header, we had better be prepared to
 		 * deal with a RIFF WAVE footer too... */
 		if (wavhdr)
-			verbatim_file(filei, fileo);
+			verbatim_file(ifile, ofile);
 
 		/* wind up */
 		fread_type_quit();
-		uvar_put((ulong) FN_QUIT, FNSIZE, fileo);
-		var_put_quit(fileo);
+		uvar_put((ulong) FN_QUIT, FNSIZE, ofile);
+		var_put_quit(ofile);
 
 		/* and free the space used */
 		if (wavhdr)
@@ -711,10 +695,10 @@ default:
 		/* Firstly skip the number of bytes requested in the command
 		 * line */
 		for (i = 0; i < nskip; i++) {
-			int byte = getc(filei);
+			int byte = getc(ifile);
 			if (byte == EOF)
 				errx(1, "File too short for requested alignment\n");
-			putc_exit(byte, fileo);
+			putc_exit(byte, ofile);
 		}
 
 		/* read magic number */
@@ -723,7 +707,7 @@ default:
 
 			version = MAX_VERSION + 1;
 			while (version > MAX_VERSION) {
-				int byte = getc(filei);
+				int byte = getc(ifile);
 				if (byte == EOF)
 					errx(1, "No magic number\n");
 				if (magic[nscan] != '\0' && byte == magic[nscan])
@@ -732,11 +716,11 @@ default:
 					version = byte;
 				else {
 					for (i = 0; i < nscan; i++)
-						putc_exit(magic[i], fileo);
+						putc_exit(magic[i], ofile);
 					if (byte == magic[0])
 						nscan = 1;
 					else {
-						putc_exit(byte, fileo);
+						putc_exit(byte, ofile);
 						nscan = 0;
 					}
 					version = MAX_VERSION + 1;
@@ -760,7 +744,7 @@ default:
 		fwrite_type_init();
 
 		/* get the internal file type */
-		internal_ftype = UINT_GET(TYPESIZE, filei);
+		internal_ftype = UINT_GET(TYPESIZE, ifile);
 
 		/* has the user requested a change in file type? */
 		if (internal_ftype != ftype) {
@@ -774,18 +758,18 @@ default:
 					errx(1, "Not able to perform requested output format conversion\n");
 			}
 		}
-		nchan = UINT_GET(CHANSIZE, filei);
+		nchan = UINT_GET(CHANSIZE, ifile);
 
 		/* get blocksize if version > 0 */
 		if (version > 0) {
 			blocksize = UINT_GET((int)(log((double)DEFAULT_BLOCK_SIZE) / M_LN2),
-					     filei);
-			maxnlpc = UINT_GET(LPCQSIZE, filei);
-			nmean = UINT_GET(0, filei);
-			nskip = UINT_GET(NSKIPSIZE, filei);
+					     ifile);
+			maxnlpc = UINT_GET(LPCQSIZE, ifile);
+			nmean = UINT_GET(0, ifile);
+			nskip = UINT_GET(NSKIPSIZE, ifile);
 			for (i = 0; i < nskip; i++) {
-				int byte = uvar_get(XBYTESIZE, filei);
-				putc_exit(byte, fileo);
+				int byte = uvar_get(XBYTESIZE, ifile);
+				putc_exit(byte, ofile);
 			}
 		} else
 			blocksize = DEFAULT_BLOCK_SIZE;
@@ -812,7 +796,7 @@ default:
 
 		/* get commands from file and execute them */
 		chan = 0;
-		while ((cmd = uvar_get(FNSIZE, filei)) != FN_QUIT) {
+		while ((cmd = uvar_get(FNSIZE, ifile)) != FN_QUIT) {
 			switch (cmd) {
 			case FN_ZERO:
 			case FN_DIFF0:
@@ -824,7 +808,7 @@ default:
 					int resn = 0, nlpc, j;
 
 					if (cmd != FN_ZERO) {
-						resn = uvar_get(ENERGYSIZE, filei);
+						resn = uvar_get(ENERGYSIZE, ifile);
 						/* this is a hack as version
 						 * 0 differed in definition
 						 * of var_get */
@@ -852,27 +836,27 @@ default:
 						break;
 					case FN_DIFF0:
 						for (i = 0; i < blocksize; i++)
-							cbuffer[i] = var_get(resn, filei) + coffset;
+							cbuffer[i] = var_get(resn, ifile) + coffset;
 						break;
 					case FN_DIFF1:
 						for (i = 0; i < blocksize; i++)
-							cbuffer[i] = var_get(resn, filei) + cbuffer[i - 1];
+							cbuffer[i] = var_get(resn, ifile) + cbuffer[i - 1];
 						break;
 					case FN_DIFF2:
 						for (i = 0; i < blocksize; i++)
-							cbuffer[i] = var_get(resn, filei) + (2 * cbuffer[i - 1] -
+							cbuffer[i] = var_get(resn, ifile) + (2 * cbuffer[i - 1] -
 							    cbuffer[i - 2]);
 						break;
 					case FN_DIFF3:
 						for (i = 0; i < blocksize; i++)
-							cbuffer[i] = var_get(resn, filei) + 3 * (cbuffer[i - 1] -
+							cbuffer[i] = var_get(resn, ifile) + 3 * (cbuffer[i - 1] -
 												 cbuffer[i - 2]) + cbuffer[i - 3];
 						break;
 					case FN_QLPC:
-						nlpc = uvar_get(LPCQSIZE, filei);
+						nlpc = uvar_get(LPCQSIZE, ifile);
 
 						for (i = 0; i < nlpc; i++)
-							qlpc[i] = var_get(LPCQUANT, filei);
+							qlpc[i] = var_get(LPCQUANT, ifile);
 						for (i = 0; i < nlpc; i++)
 							cbuffer[i - nlpc] -= coffset;
 						for (i = 0; i < blocksize; i++) {
@@ -880,7 +864,7 @@ default:
 
 							for (j = 0; j < nlpc; j++)
 								sum += qlpc[j] * cbuffer[i - j - 1];
-							cbuffer[i] = var_get(resn, filei) + (sum >> LPCQUANT);
+							cbuffer[i] = var_get(resn, ifile) + (sum >> LPCQUANT);
 						}
 						if (coffset != 0)
 							for (i = 0; i < blocksize; i++)
@@ -910,20 +894,20 @@ default:
 					fix_bitshift(cbuffer, blocksize, bitshift, internal_ftype);
 
 					if (chan == nchan - 1)
-						fwrite_type(buffer, ftype, nchan, blocksize, fileo);
+						fwrite_type(buffer, ftype, nchan, blocksize, ofile);
 					chan = (chan + 1) % nchan;
 				}
 				break;
 			case FN_BLOCKSIZE:
-				blocksize = UINT_GET((int)(log((double)blocksize) / M_LN2), filei);
+				blocksize = UINT_GET((int)(log((double)blocksize) / M_LN2), ifile);
 				break;
 			case FN_BITSHIFT:
-				bitshift = uvar_get(BITSHIFTSIZE, filei);
+				bitshift = uvar_get(BITSHIFTSIZE, ifile);
 				break;
 			case FN_VERBATIM:{
-					int cklen = uvar_get(VERBATIM_CKSIZE_SIZE, filei);
+					int cklen = uvar_get(VERBATIM_CKSIZE_SIZE, ifile);
 					while (cklen--)
-						fputc(uvar_get(VERBATIM_BYTE_SIZE, filei), fileo);
+						fputc(uvar_get(VERBATIM_BYTE_SIZE, ifile), ofile);
 				}
 				break;
 			default:
@@ -941,21 +925,18 @@ default:
 	}
 
 	/* close the files if this function opened them */
-	if (filei != stdi)
-		fclose(filei);
-	if (fileo != stdo)
-		fclose(fileo);
+	if (ifile != stdi)
+		fclose(ifile);
+	if (ofile != stdo)
+		fclose(ofile);
 
 	/* make the compressed file look like the original if possible */
-	if ((filei != stdi) && (fileo != stdo))
-		(void)dupfileinfo(filenamei, filenameo);
-
-	if (tmpfilename != NULL)
-		free(tmpfilename);
+	if ((ifile != stdi) && (ofile != stdo))
+		(void)dupfileinfo(iname, oname);
 
 	if (nfilename == 1)
-		if (unlink(filenamei))
-			err(1, "%s", filenamei);
+		if (unlink(iname))
+			err(1, "%s", iname);
 
 	return (0);
 }
