@@ -16,7 +16,9 @@
 
 char *readmode = "r";
 char *writemode = "w";
-#define FILESUFFIX ".shn"
+
+#define SUFFIX ".shn"
+#define SUFLEN (strlen(SUFFIX))
 
 int getc_exit_val;
 char *filenameo = NULL;
@@ -84,33 +86,24 @@ Satof(char *string)
 }
 
 float *
-parseList(maxresnstr, nchan)
-	char *maxresnstr;
-	int nchan;
+parseList(char *maxresnstr, int nchan)
 {
 	int nval;
 	char *str, *floatstr;
 	float *floatval;
 
-	/* copy maxresnstr to temporary space, str */
-	str = malloc(strlen(maxresnstr) + 1);
-	strcpy(str, maxresnstr);
-
-	/* grab space for the floating point parses */
+	str = strdup(maxresnstr);
 	floatval = pmalloc(nchan * sizeof(*floatval));
-
-	/* loop for all floats in the arguement */
 	floatstr = strtok(str, ",");
 	floatval[0] = Satof(floatstr);
 
-	for (nval = 1; (floatstr = strtok(NULL, ",")) != NULL && nval < nchan; nval++)
+	for (nval = 1; (floatstr = strtok(NULL, ",")) && nval < nchan; nval++)
 		floatval[nval] = Satof(floatstr);
 
 	for (; nval < nchan; nval++)
 		floatval[nval] = floatval[nval - 1];
 
 	free(str);
-
 	return (floatval);
 }
 
@@ -272,28 +265,21 @@ default:
 		filenamei = minusstr;
 		filenameo = minusstr;
 		break;
-	case 1:{
-			int oldfilelen, suffixlen, maxlen;
-
-			filenamei = argv[argc - 1];
-			oldfilelen = strlen(filenamei);
-			suffixlen = strlen(FILESUFFIX);
-			maxlen = oldfilelen + suffixlen;
-			tmpfilename = pmalloc(maxlen + 1);
-			strcpy(tmpfilename, filenamei);
-
-			if (extract) {
-				int newfilelen = oldfilelen - suffixlen;
-				if (strcmp(filenamei + newfilelen, FILESUFFIX))
-					errx(1, "file name does not end in %s: %s\n", FILESUFFIX,
-						   filenamei);
-				tmpfilename[newfilelen] = '\0';
-			} else
-				strcat(tmpfilename, FILESUFFIX);
-
-			filenameo = tmpfilename;
-			break;
+	case 1:
+		filenamei = argv[argc - 1];
+		if (extract) {
+			char *dot;
+			filenameo = strdup(filenamei);
+			if (((dot = strrchr(filenameo, '.')) == NULL)
+			|| strncmp(dot+1, SUFFIX, SUFLEN))
+				errx(1,"no %s in %s", SUFFIX,filenamei);
+			*dot = '\0';
+		} else {
+			filenameo = calloc(1, FILENAME_MAX);
+			strlcpy(filenameo, filenamei, FILENAME_MAX);
+			strlcat(filenameo, SUFFIX, FILENAME_MAX);
 		}
+		break;
 	case 2:
 		filenamei = argv[argc - 2];
 		filenameo = argv[argc - 1];
