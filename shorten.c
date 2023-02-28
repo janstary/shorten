@@ -269,7 +269,7 @@ default:
 			char *dot;
 			oname = strdup(iname);
 			if (((dot = strrchr(oname, '.')) == NULL)
-			|| strncmp(dot+1, SUFFIX, SUFLEN))
+			|| strncmp(dot, SUFFIX, SUFLEN))
 				errx(1,"no %s in %s", SUFFIX, iname);
 			*dot = '\0';
 		} else {
