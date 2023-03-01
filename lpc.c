@@ -20,7 +20,6 @@ int wav2lpc(buf, nbuf, offset, qlpc, nlpc, version, psigbit, presbit)
   int   i, j, bestnbit, bestnlpc;
   float e = 0.0, bestesize, ci, esize;
   float acf[MAX_LPC_ORDER + 1];
-  float ref[MAX_LPC_ORDER + 1];
   float lpc[MAX_LPC_ORDER + 1];
   float tmp[MAX_LPC_ORDER + 1];
   float escale = (float) (0.5 * M_LN2 * M_LN2 / nbuf);
@@ -73,7 +72,7 @@ int wav2lpc(buf, nbuf, offset, qlpc, nlpc, version, psigbit, presbit)
     /* compute the reflection and LP coeffients for order j predictor */
     ci = 0.0;
     for(j = 1; j < i; j++) ci += lpc[j] * acf[i - j];
-    ref[i] = ci = (acf[i] - ci) / e;
+    ci = (acf[i] - ci) / e;
     lpc[i] = ci;
     for(j = 1; j < i; j++) tmp[j] = lpc[j] - ci * lpc[i - j];
     for(j = 1; j < i; j++) lpc[j] = tmp[j];
